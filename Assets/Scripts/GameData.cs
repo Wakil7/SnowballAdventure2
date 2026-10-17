@@ -127,6 +127,19 @@ namespace SnowballAdventure
             return level <= Data.maxUnlockedLevel;
         }
 
+        public static CharacterDef GetCharacterUnlockedByLevel(int level)
+        {
+            int targetUnlockLevel = level + 1;
+            for (int i = 0; i < Characters.Length; i++)
+            {
+                if (Characters[i].unlockLevel == targetUnlockLevel)
+                {
+                    return Characters[i];
+                }
+            }
+            return null;
+        }
+
         public static void CompleteLevel(int level, int coinsCollected)
         {
             if (level >= 1 && level <= TOTAL_LEVELS)

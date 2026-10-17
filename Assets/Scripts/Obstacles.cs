@@ -444,7 +444,7 @@ namespace SnowballAdventure
     // --------------------------------------------------------
     public class BlinkingIcePlatform : MonoBehaviour
     {
-        public float activeDuration = 2.2f;
+        public float activeDuration = 3.2f;
         public float warningDuration = 0.8f;
         public float inactiveDuration = 1.4f;
         public float initialOffset = 0f;
@@ -637,6 +637,22 @@ namespace SnowballAdventure
             }
         }
 
+        private void Start()
+        {
+            if (targetPos == startPos + new Vector3(4f, 0f, 0f) && moveDelta != new Vector2(4f, 0f))
+            {
+                targetPos = startPos + (Vector3)moveDelta;
+            }
+        }
+
+        public void SetTarget(Vector3 start, Vector3 target, float moveSpeed = -1f, float pause = -1f)
+        {
+            startPos = start;
+            targetPos = target;
+            if (moveSpeed > 0f) speed = moveSpeed;
+            if (pause >= 0f) waitTime = pause;
+        }
+
         private void FixedUpdate()
         {
             if (pauseTimer > 0f)
@@ -715,25 +731,56 @@ namespace SnowballAdventure
     public class FrostPortal : MonoBehaviour
     {
         public FrostPortal targetPortal;
-        public Vector2 exitVelocity = new Vector2(8f, 6f);
-        public float cooldownTime = 0.8f;
+        public Vector2 exitVelocity = Vector2.zero;
+        public float cooldownTime = 0.4f;
 
-        private static float globalLastTeleportTime = 0f;
+        public float lastTeleportTime = -1f;
+        private static float globalLastTeleportTime = -1f;
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (targetPortal == null) return;
-            if (Time.time - globalLastTeleportTime < cooldownTime) return;
+            TryTeleport(collision);
+        }
 
-            if (collision.TryGetComponent<SnowballController>(out var ball) &&
-                collision.TryGetComponent<Rigidbody2D>(out var rb))
+        private void OnTriggerStay2D(Collider2D collision)
+        {
+            TryTeleport(collision);
+        }
+
+        private void TryTeleport(Collider2D collision)
+        {
+            if (targetPortal == null) return;
+            if (Time.time - lastTeleportTime < cooldownTime) return;
+            if (Time.time - globalLastTeleportTime < 0.2f) return;
+
+            var ball = collision.GetComponentInParent<SnowballController>() ?? collision.GetComponent<SnowballController>();
+            if (ball == null && collision.attachedRigidbody != null)
             {
-                globalLastTeleportTime = Time.time;
-                Vector3 exitPos = targetPortal.transform.position;
-                ball.transform.position = exitPos;
-                rb.linearVelocity = exitVelocity;
-                SoundManager.EnsureInstance().PlaySpring();
+                ball = collision.attachedRigidbody.GetComponent<SnowballController>();
             }
+            if (ball == null) return;
+
+            var rb = ball.GetComponent<Rigidbody2D>();
+            if (rb == null) return;
+
+            lastTeleportTime = Time.time;
+            globalLastTeleportTime = Time.time;
+            if (targetPortal != null)
+            {
+                targetPortal.lastTeleportTime = Time.time;
+            }
+
+            Vector3 exitPos = targetPortal.transform.position;
+            Vector2 finalVel = exitVelocity;
+            if (finalVel == Vector2.zero)
+            {
+                float hSpeed = Mathf.Clamp(rb.linearVelocity.x, -ball.maxRollSpeed, ball.maxRollSpeed);
+                finalVel = new Vector2(hSpeed, 0f);
+            }
+
+            ball.Teleport(exitPos, finalVel);
+            SoundManager.EnsureInstance().PlayPop();
+            SmoothFollowCamera.Instance?.NotifyPortalWarp();
         }
     }
 
@@ -796,6 +843,10 @@ namespace SnowballAdventure
 
         public SpriteRenderer beamRenderer;
         public Collider2D beamCollider;
+        public SpriteRenderer topEmitterRenderer;
+        public SpriteRenderer botEmitterRenderer;
+
+        public bool isActive { get; private set; } = false;
 
         private void Start()
         {
@@ -808,40 +859,79 @@ namespace SnowballAdventure
 
             while (true)
             {
-                // Inactive state
+                // Inactive state: beam completely invisible, emitters dim
+                isActive = false;
                 if (beamCollider != null) beamCollider.enabled = false;
-                if (beamRenderer != null) beamRenderer.color = new Color(1f, 1f, 1f, 0.05f);
+                if (beamRenderer != null) beamRenderer.color = new Color(1f, 1f, 1f, 0f);
+                if (topEmitterRenderer != null) topEmitterRenderer.color = new Color(0.6f, 0.6f, 0.75f, 1f);
+                if (botEmitterRenderer != null) botEmitterRenderer.color = new Color(0.6f, 0.6f, 0.75f, 1f);
                 yield return new WaitForSeconds(inactiveDuration);
 
-                // Warning flickering state
+                // Warning flickering state: rapid telegraph pulses
                 float warnTimer = 0f;
                 while (warnTimer < warningDuration)
                 {
-                    if (beamRenderer != null)
-                    {
-                        float a = Mathf.PingPong(warnTimer * 12f, 1f) > 0.4f ? 0.4f : 0.1f;
-                        beamRenderer.color = new Color(1f, 1f, 1f, a);
-                    }
+                    float flash = Mathf.PingPong(warnTimer * 14f, 1f);
+                    float a = flash > 0.45f ? 0.4f : 0.05f;
+                    Color warnCol = flash > 0.45f ? new Color(1f, 0.45f, 0.45f, a) : new Color(0.4f, 0.9f, 1f, a);
+                    if (beamRenderer != null) beamRenderer.color = warnCol;
+                    if (topEmitterRenderer != null) topEmitterRenderer.color = flash > 0.45f ? Color.white : new Color(0.7f, 0.7f, 1f, 1f);
+                    if (botEmitterRenderer != null) botEmitterRenderer.color = flash > 0.45f ? Color.white : new Color(0.7f, 0.7f, 1f, 1f);
+
                     warnTimer += Time.deltaTime;
                     yield return null;
                 }
 
-                // Active laser blast state
+                // Active laser blast state: lethal beam
+                isActive = true;
                 if (beamCollider != null) beamCollider.enabled = true;
                 if (beamRenderer != null) beamRenderer.color = Color.white;
+                if (topEmitterRenderer != null) topEmitterRenderer.color = Color.white;
+                if (botEmitterRenderer != null) botEmitterRenderer.color = Color.white;
+
+                // Check if player is already standing inside the beam when it erupts
+                CheckAndDamagePlayer();
+
                 yield return new WaitForSeconds(activeDuration);
+            }
+        }
+
+        public void CheckAndDamagePlayer()
+        {
+            if (!isActive || beamCollider == null) return;
+            Collider2D[] hits = new Collider2D[5];
+            ContactFilter2D filter = new ContactFilter2D();
+            filter.useTriggers = true;
+            int count = beamCollider.Overlap(filter, hits);
+            for (int i = 0; i < count; i++)
+            {
+                if (hits[i] != null)
+                {
+                    var ball = hits[i].GetComponentInParent<SnowballController>() ?? hits[i].GetComponent<SnowballController>();
+                    if (ball != null)
+                    {
+                        ball.HitHazard();
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            if (isActive)
+            {
+                var ball = collision.GetComponentInParent<SnowballController>() ?? collision.GetComponent<SnowballController>();
+                if (ball != null) ball.HitHazard();
             }
         }
 
         private void OnTriggerStay2D(Collider2D collision)
         {
-            if (beamCollider != null && beamCollider.enabled)
+            if (isActive)
             {
                 var ball = collision.GetComponentInParent<SnowballController>() ?? collision.GetComponent<SnowballController>();
-                if (ball != null)
-                {
-                    ball.HitHazard();
-                }
+                if (ball != null) ball.HitHazard();
             }
         }
     }
@@ -855,17 +945,42 @@ namespace SnowballAdventure
         public float retractSpeed = 3.5f;
         public float groundWait = 0.6f;
         public float triggerDistanceX = 2.2f;
-        public float dropDistance = 4.5f;
+        public float dropDistance = 5.9f;
 
         private Vector3 startPos;
         private Vector3 targetPos;
         private bool isSlamming = false;
         private bool isRetracting = false;
 
-        private void Awake()
+        private void Start()
         {
             startPos = transform.position;
-            targetPos = startPos + Vector3.down * dropDistance;
+
+            // Automatically detect floor surface below to ensure the pillar reaches the ground
+            RaycastHit2D[] hits = Physics2D.RaycastAll(startPos, Vector2.down, 25f);
+            float floorY = startPos.y - dropDistance;
+            bool foundFloor = false;
+            foreach (var h in hits)
+            {
+                if (h.collider != null && h.collider.gameObject != gameObject && !h.collider.isTrigger)
+                {
+                    floorY = h.point.y;
+                    foundFloor = true;
+                    break;
+                }
+            }
+
+            // Collider height is 1.2f (half-height = 0.6f).
+            // Bottom of pillar will reach exactly floorY.
+            if (foundFloor)
+            {
+                targetPos = new Vector3(startPos.x, floorY + 0.6f, startPos.z);
+                dropDistance = startPos.y - targetPos.y;
+            }
+            else
+            {
+                targetPos = startPos + Vector3.down * dropDistance;
+            }
         }
 
         private void Update()
@@ -874,6 +989,10 @@ namespace SnowballAdventure
             {
                 // Check if player is below
                 GameObject player = GameObject.FindWithTag("Player");
+                if (player == null && SnowballController.Instance != null)
+                {
+                    player = SnowballController.Instance.gameObject;
+                }
                 if (player != null)
                 {
                     float dx = Mathf.Abs(player.transform.position.x - transform.position.x);
@@ -889,12 +1008,17 @@ namespace SnowballAdventure
         private IEnumerator SlamRoutine()
         {
             isSlamming = true;
+            Collider2D myCol = GetComponent<Collider2D>();
+
             while (Vector3.Distance(transform.position, targetPos) > 0.05f)
             {
                 transform.position = Vector3.MoveTowards(transform.position, targetPos, slamSpeed * Time.deltaTime);
+                CheckOverlapDamage(myCol);
                 yield return null;
             }
             transform.position = targetPos;
+            CheckOverlapDamage(myCol);
+
             yield return new WaitForSeconds(groundWait);
 
             isSlamming = false;
@@ -908,18 +1032,41 @@ namespace SnowballAdventure
             isRetracting = false;
         }
 
+        private void CheckOverlapDamage(Collider2D myCol)
+        {
+            if (myCol == null) return;
+            Collider2D[] hits = new Collider2D[5];
+            ContactFilter2D filter = new ContactFilter2D();
+            filter.useTriggers = true;
+            int count = myCol.Overlap(filter, hits);
+            for (int i = 0; i < count; i++)
+            {
+                if (hits[i] != null)
+                {
+                    CheckHit(hits[i]);
+                }
+            }
+        }
+
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            var ball = collision.GetComponentInParent<SnowballController>() ?? collision.GetComponent<SnowballController>();
-            if (ball != null)
-            {
-                ball.HitHazard();
-            }
+            CheckHit(collision);
+        }
+
+        private void OnTriggerStay2D(Collider2D collision)
+        {
+            CheckHit(collision);
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            var ball = collision.gameObject.GetComponentInParent<SnowballController>() ?? collision.gameObject.GetComponent<SnowballController>();
+            CheckHit(collision.collider);
+        }
+
+        private void CheckHit(Collider2D col)
+        {
+            if (col == null) return;
+            var ball = col.GetComponentInParent<SnowballController>() ?? col.GetComponent<SnowballController>();
             if (ball != null)
             {
                 ball.HitHazard();
@@ -938,7 +1085,23 @@ namespace SnowballAdventure
         {
             if (collision.gameObject.TryGetComponent<Rigidbody2D>(out var rb))
             {
-                rb.linearVelocity = new Vector2(conveyorSpeed, rb.linearVelocity.y);
+                if (collision.gameObject.TryGetComponent<SnowballController>(out var ball))
+                {
+                    float inputH = ball.CurrentHorizontalInput;
+                    if (Mathf.Abs(inputH) > 0.05f)
+                    {
+                        float targetSpeed = inputH * ball.maxRollSpeed + conveyorSpeed;
+                        rb.linearVelocity = new Vector2(targetSpeed, rb.linearVelocity.y);
+                    }
+                    else
+                    {
+                        rb.linearVelocity = new Vector2(conveyorSpeed, rb.linearVelocity.y);
+                    }
+                }
+                else
+                {
+                    rb.linearVelocity = new Vector2(conveyorSpeed, rb.linearVelocity.y);
+                }
             }
         }
     }

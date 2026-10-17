@@ -5,9 +5,11 @@ import os
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 OUTPUT_SPRITES = r"D:\Games\Snowball Adventure 2\Assets\Sprites"
+OUTPUT_RESOURCES_SPRITES = r"D:\Games\Snowball Adventure 2\Assets\Resources\Sprites"
 OUTPUT_AUDIO = r"D:\Games\Snowball Adventure 2\Assets\Audio"
 
 os.makedirs(OUTPUT_SPRITES, exist_ok=True)
+os.makedirs(OUTPUT_RESOURCES_SPRITES, exist_ok=True)
 os.makedirs(OUTPUT_AUDIO, exist_ok=True)
 
 # -------------------------------------------------------------
@@ -26,6 +28,11 @@ def draw_radial_gradient(draw, center, radius, inner_color, outer_color):
 
 def draw_smooth_circle(draw, bbox, fill, outline=None, width=1):
     draw.ellipse(bbox, fill=fill, outline=outline, width=width)
+
+def draw_sparkle(draw, cx, cy, size, color):
+    draw.polygon([(cx, cy - size), (cx + 1, cy), (cx, cy + size), (cx - 1, cy)], fill=color)
+    draw.polygon([(cx - size, cy), (cx, cy + 1), (cx + size, cy), (cx - 1, cy)], fill=color)
+    draw.ellipse([cx - 1, cy - 1, cx + 1, cy + 1], fill=(255, 255, 255, 255))
 
 # -------------------------------------------------------------
 # 1. 10 SNOWBALL CHARACTERS (128x128 high-res sprites)
@@ -114,11 +121,11 @@ characters = [
     },
     {
         "id": "char_9_cosmo",
-        "name": "Cosmic Void",
-        "base_col": (210, 205, 245, 255),
-        "shade_col": (120, 95, 185, 255),
+        "name": "Cosmic Nebula",
+        "base_col": (235, 228, 255, 255),
+        "shade_col": (110, 80, 180, 255),
         "accent_col": (200, 110, 255, 255),
-        "eye_col": (255, 230, 150, 255),
+        "eye_col": (25, 12, 50, 255),
         "hat": "orbit_ring",
     },
 ]
@@ -150,16 +157,34 @@ def generate_characters():
                               max(0, ch["shade_col"][1] - 25),
                               max(0, ch["shade_col"][2] - 25), 200), width=2)
 
+        hat = ch["hat"]
+
         # 3. Soft snow texture specks inside sphere
-        for sx, sy in [(45, 82), (83, 85), (64, 94), (35, 60), (93, 62)]:
-            draw.ellipse([sx - 2, sy - 2, sx + 2, sy + 2], fill=(255, 255, 255, 120))
+        if hat == "visor":
+            specks = [(40, 94), (88, 94), (64, 100)]
+            for sx, sy in specks:
+                draw.ellipse([sx - 2, sy - 2, sx + 2, sy + 2], fill=(255, 255, 255, 120))
+        elif hat == "orbit_ring":
+            draw_sparkle(draw, 42, 90, 3, (255, 255, 255, 220))
+            draw_sparkle(draw, 86, 90, 3, (255, 255, 255, 220))
+            draw_sparkle(draw, 64, 97, 2, (255, 240, 180, 220))
+            draw.ellipse([34, 60, 36, 62], fill=(255, 255, 255, 180))
+            draw.ellipse([94, 62, 96, 64], fill=(255, 255, 255, 180))
+        else:
+            specks = [(45, 82), (83, 85), (64, 94), (35, 60), (93, 62)]
+            for sx, sy in specks:
+                draw.ellipse([sx - 2, sy - 2, sx + 2, sy + 2], fill=(255, 255, 255, 120))
 
         # 4. Glossy highlight reflection (crescent shine at top-left)
-        draw.ellipse([26, 26, 56, 48], fill=(255, 255, 255, 150))
-        draw.ellipse([32, 30, 46, 42], fill=(255, 255, 255, 220))
+        if hat == "visor":
+            # Reposition highlight neatly above the cyber visor
+            draw.ellipse([32, 18, 52, 36], fill=(255, 255, 255, 160))
+            draw.ellipse([36, 22, 46, 31], fill=(255, 255, 255, 240))
+        else:
+            draw.ellipse([26, 26, 56, 48], fill=(255, 255, 255, 150))
+            draw.ellipse([32, 30, 46, 42], fill=(255, 255, 255, 220))
 
         # 5. Accessories / Hats fitted smoothly to spherical contour
-        hat = ch["hat"]
         if hat == "beanie":
             # Cozy winter beanie cuff wrapping top of sphere
             draw.arc([cx - r + 3, cy - r + 3, cx + r - 3, cy + r - 3], start=210, end=330, fill=ch["accent_col"], width=14)
@@ -193,15 +218,91 @@ def generate_characters():
             pts_inner = [(58, 26), (61, 18), (64, 12), (67, 18), (70, 26)]
             draw.polygon(pts_inner, fill=(255, 235, 80, 255))
         elif hat == "orbit_ring":
-            draw.arc([16, 52, 112, 76], start=160, end=380, fill=ch["accent_col"], width=3)
-            draw.ellipse([100, 56, 108, 64], fill=(255, 240, 180, 255))
+            # Planetary Orbit Ring (Floating celestial Saturn halo)
+            halo_img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+            hdraw = ImageDraw.Draw(halo_img)
 
-        # 6. Rosy Cheeks (symmetric about x = 64)
-        draw.ellipse([36, 70, 50, 80], fill=(255, 130, 150, 80))
-        draw.ellipse([78, 70, 92, 80], fill=(255, 130, 150, 80))
+            hx, hy = 64, 27
+            # Outer glow
+            hdraw.ellipse([hx - 44, hy - 11, hx + 44, hy + 11], outline=(210, 120, 255, 190), width=4)
+            # Bright core ring
+            hdraw.ellipse([hx - 43, hy - 10, hx + 43, hy + 10], outline=(255, 245, 255, 255), width=2)
+            # Inner gold shimmer
+            hdraw.ellipse([hx - 41, hy - 8, hx + 41, hy + 8], outline=(255, 220, 140, 210), width=1)
 
-        # 7. Cute Expressive Eyes (symmetric about x = 64)
-        if ch["hat"] != "visor":
+            # Mini Orbiting Moon on the right of the halo
+            mx, my = hx + 39, hy - 4
+            hdraw.ellipse([mx - 7, my - 7, mx + 7, my + 7], fill=(255, 235, 140, 255), outline=(220, 160, 40, 255), width=1)
+            hdraw.ellipse([mx - 5, my - 5, mx + 1, my + 1], fill=(255, 255, 230, 255))
+            hdraw.ellipse([mx + 1, my + 1, mx + 4, my + 4], fill=(225, 190, 90, 255))
+
+            # Orbiting starlet on the left
+            sx, sy = hx - 36, hy + 4
+            draw_sparkle(hdraw, sx, sy, 3, (255, 245, 180, 255))
+
+            # Rotate halo by -14 degrees for a natural planetary angle
+            halo_rot = halo_img.rotate(-14, resample=Image.Resampling.BILINEAR, center=(64, 64))
+            img.alpha_composite(halo_rot)
+
+            # Golden Crescent Moon & Star Forehead Emblem
+            draw.arc([57, 18, 71, 32], start=40, end=275, fill=(255, 215, 60, 255), width=3)
+            draw.arc([58, 19, 70, 31], start=45, end=270, fill=(255, 245, 160, 255), width=1)
+            draw_sparkle(draw, 64, 38, 3, (255, 235, 140, 255))
+        elif hat == "visor":
+            # High-tech Cyber Headset & Visor
+            accent_cyan = ch["accent_col"]
+            bright_cyan = (150, 255, 255, 255)
+            accent_pink = (255, 45, 140, 255)
+            dark_metal = (16, 22, 36, 255)
+
+            # Lower cheek cyber circuits
+            draw.line([(28, 76), (22, 76), (18, 86)], fill=(0, 220, 255, 160), width=2)
+            draw.ellipse([16, 84, 20, 88], fill=accent_cyan)
+            draw.line([(100, 76), (106, 76), (110, 86)], fill=(0, 220, 255, 160), width=2)
+            draw.ellipse([108, 84, 112, 88], fill=accent_cyan)
+
+            # Headband across top
+            draw.arc([16, 16, 112, 112], start=225, end=315, fill=dark_metal, width=7)
+            draw.arc([17, 17, 111, 111], start=230, end=310, fill=accent_cyan, width=2)
+
+            # Top Central Cyber Crest / Fin (stays within y=8)
+            draw.polygon([(61, 18), (67, 18), (65, 9), (63, 9)], fill=dark_metal, outline=accent_cyan)
+            draw.ellipse([62, 7, 66, 11], fill=bright_cyan)
+
+            # Left Ear Node (Headphone cup)
+            draw.rounded_rectangle([13, 50, 25, 74], radius=5, fill=dark_metal, outline=accent_cyan, width=2)
+            draw.ellipse([16, 56, 22, 68], fill=accent_pink)
+            draw.ellipse([18, 60, 20, 64], fill=(255, 200, 230, 255))
+
+            # Right Ear Node (Headphone cup)
+            draw.rounded_rectangle([103, 50, 115, 74], radius=5, fill=dark_metal, outline=accent_cyan, width=2)
+            draw.ellipse([106, 56, 112, 68], fill=accent_pink)
+            draw.ellipse([108, 60, 110, 64], fill=(255, 200, 230, 255))
+
+        # 6. Face Details (Eyes, Cheeks, Mouth)
+        if ch["hat"] == "orbit_ring":
+            # Starlight Rosy Cheeks
+            draw.ellipse([35, 71, 49, 81], fill=(255, 115, 180, 110))
+            draw.ellipse([79, 71, 93, 81], fill=(255, 115, 180, 110))
+            draw_sparkle(draw, 42, 76, 2, (255, 255, 255, 240))
+            draw_sparkle(draw, 86, 76, 2, (255, 255, 255, 240))
+
+            # Big Gorgeous Anime Cosmic Eyes (Amethyst Violet with Galaxy Star Catchlights)
+            for ex in [51, 77]:
+                draw.ellipse([ex - 6, 52, ex + 6, 70], fill=(25, 12, 50, 255))
+                draw.ellipse([ex - 5, 57, ex + 5, 69], fill=(145, 70, 225, 255))
+                draw.ellipse([ex - 4, 62, ex + 4, 68], fill=(245, 175, 255, 255))
+                draw.ellipse([ex - 2, 64, ex + 2, 67], fill=(255, 230, 160, 255))
+                draw.ellipse([ex - 4, 54, ex + 1, 61], fill=(255, 255, 255, 255))
+                draw_sparkle(draw, ex + 2, 64, 2, (255, 255, 255, 240))
+
+            # Cute smile
+            draw.arc([56, 69, 72, 79], start=10, end=170, fill=(35, 18, 65, 255), width=2)
+        elif ch["hat"] != "visor":
+            # Rosy Cheeks (symmetric about x = 64)
+            draw.ellipse([36, 70, 50, 80], fill=(255, 130, 150, 80))
+            draw.ellipse([78, 70, 92, 80], fill=(255, 130, 150, 80))
+
             # Left Eye
             draw.ellipse([45, 52, 57, 70], fill=ch["eye_col"])
             draw.ellipse([47, 54, 52, 61], fill=(255, 255, 255, 245))  # primary catchlight
@@ -215,14 +316,60 @@ def generate_characters():
             # Cute smile
             draw.arc([55, 68, 73, 78], start=10, end=170, fill=ch["eye_col"], width=2)
         else:
-            # Cyber Visor (symmetric about x = 64)
-            draw.rounded_rectangle([36, 54, 92, 68], radius=5, fill=(10, 20, 30, 240), outline=ch["accent_col"], width=2)
-            draw.line([40, 61, 88, 61], fill=ch["accent_col"], width=3)
-            draw.ellipse([78, 58, 84, 64], fill=(255, 255, 255, 255))
+            accent_cyan = ch["accent_col"]
+            bright_cyan = (150, 255, 255, 255)
+            accent_pink = (255, 45, 140, 255)
+
+            # Cyber Visor (Futuristic aerodynamic wrap-around)
+            visor_poly = [
+                (25, 53),
+                (38, 45),
+                (64, 43),
+                (90, 45),
+                (103, 53),
+                (97, 72),
+                (64, 75),
+                (31, 72)
+            ]
+            draw.polygon(visor_poly, fill=(12, 16, 28, 252), outline=accent_cyan)
+
+            # Visor bottom neon bevel
+            draw.line([(31, 72), (64, 75), (97, 72)], fill=accent_cyan, width=2)
+
+            # Visor gloss reflection streak on top-left
+            draw.polygon([(33, 48), (48, 46), (44, 53), (30, 54)], fill=(255, 255, 255, 140))
+
+            # Left Digital LED Eye
+            draw.rounded_rectangle([39, 51, 55, 67], radius=4, fill=(0, 215, 255, 240), outline=bright_cyan, width=1)
+            draw.rectangle([42, 53, 46, 58], fill=(255, 255, 255, 255))
+            draw.line([40, 56, 54, 56], fill=(10, 30, 50, 150), width=1)
+            draw.line([40, 61, 54, 61], fill=(10, 30, 50, 150), width=1)
+
+            # Right Digital LED Eye
+            draw.rounded_rectangle([73, 51, 89, 67], radius=4, fill=(0, 215, 255, 240), outline=bright_cyan, width=1)
+            draw.rectangle([76, 53, 80, 58], fill=(255, 255, 255, 255))
+            draw.line([74, 56, 88, 56], fill=(10, 30, 50, 150), width=1)
+            draw.line([74, 61, 88, 61], fill=(10, 30, 50, 150), width=1)
+
+            # Center Mini HUD targeting reticle & audio bars
+            draw.line([(62, 57), (62, 63)], fill=accent_pink, width=1)
+            draw.line([(64, 54), (64, 66)], fill=bright_cyan, width=1)
+            draw.line([(66, 57), (66, 63)], fill=accent_pink, width=1)
+
+            # Cute cyber smile below visor
+            draw.arc([56, 78, 72, 87], start=20, end=160, fill=(20, 45, 75, 255), width=2)
+
+            # Cyber Cheek Marks (glowing dual neon dashes)
+            draw.line([(34, 79), (46, 79)], fill=accent_pink, width=2)
+            draw.line([(37, 83), (43, 83)], fill=accent_cyan, width=2)
+            draw.line([(82, 79), (94, 79)], fill=accent_pink, width=2)
+            draw.line([(85, 83), (91, 83)], fill=accent_cyan, width=2)
 
         filepath = os.path.join(OUTPUT_SPRITES, f"{ch['id']}.png")
         img.save(filepath, "PNG")
-        print(f"Generated {filepath}")
+        res_filepath = os.path.join(OUTPUT_RESOURCES_SPRITES, f"{ch['id']}.png")
+        img.save(res_filepath, "PNG")
+        print(f"Generated {filepath} and {res_filepath}")
 
 # -------------------------------------------------------------
 # 2. COLLECTIBLE COIN (64x64) - Star embossed gold coin

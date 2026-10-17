@@ -4,9 +4,13 @@ namespace SnowballAdventure
 {
     public class SmoothFollowCamera : MonoBehaviour
     {
+        public static SmoothFollowCamera Instance { get; private set; }
+
         public Transform target;
         public Vector3 offset = new Vector3(0f, 1.4f, -10f);
         public float smoothTime = 0.15f;
+        [Tooltip("Smooth time during portal warp transition (double smoothTime = 0.5x speed)")]
+        public float portalSmoothTime = 0.30f; // 0.5x speed (half speed) for portal transition
         public float lookAheadFactor = 0.25f;
 
         [Header("Level Bounds")]
@@ -17,6 +21,18 @@ namespace SnowballAdventure
 
         private Vector3 currentVelocity;
         private Vector3 targetPos;
+        private float portalTransitionTimer = 0f;
+        private bool isPortalTransitionActive = false;
+
+        private void Awake()
+        {
+            Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
 
         private void Start()
         {
@@ -24,6 +40,14 @@ namespace SnowballAdventure
             {
                 target = SnowballController.Instance.transform;
             }
+        }
+
+        public void NotifyPortalWarp()
+        {
+            // Glides smoothly at 0.5x speed across the screen to clearly show the portal change
+            isPortalTransitionActive = true;
+            portalTransitionTimer = 3.0f; // Safe maximum timeout
+            currentVelocity = Vector3.zero;
         }
 
         private void LateUpdate()
@@ -35,7 +59,7 @@ namespace SnowballAdventure
             }
 
             float lookAhead = 0f;
-            if (target.TryGetComponent<Rigidbody2D>(out var rb))
+            if (!isPortalTransitionActive && target.TryGetComponent<Rigidbody2D>(out var rb))
             {
                 lookAhead = rb.linearVelocity.x * lookAheadFactor;
             }
@@ -44,7 +68,20 @@ namespace SnowballAdventure
             float desiredY = Mathf.Clamp(target.position.y + offset.y, minY, maxY);
 
             targetPos = new Vector3(desiredX, desiredY, offset.z);
-            transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref currentVelocity, smoothTime);
+
+            // When warp transition is active, move at 0.5x speed to clearly display the transition
+            float currentSmooth = smoothTime;
+            if (isPortalTransitionActive)
+            {
+                portalTransitionTimer -= Time.deltaTime;
+                currentSmooth = portalSmoothTime > 0f ? portalSmoothTime : (smoothTime * 2f);
+                if (Vector2.Distance(new Vector2(transform.position.x, transform.position.y), new Vector2(targetPos.x, targetPos.y)) < 0.35f || portalTransitionTimer <= 0f)
+                {
+                    isPortalTransitionActive = false;
+                }
+            }
+
+            transform.position = Vector3.SmoothDamp(transform.position, targetPos, ref currentVelocity, currentSmooth);
         }
     }
 

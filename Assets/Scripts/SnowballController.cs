@@ -40,6 +40,7 @@ namespace SnowballAdventure
         private CircleCollider2D circleCol;
         private float radius;
         private float currentHorizontalInput = 0f;
+        public float CurrentHorizontalInput => currentHorizontalInput;
         private bool jumpRequested = false;
         private bool isJumpCooldown = false;
         private Vector2 lastPhysicsPos;
@@ -436,6 +437,27 @@ namespace SnowballAdventure
             onShrinkComplete?.Invoke();
         }
 
+        public void Teleport(Vector3 newPosition, Vector2 newVelocity)
+        {
+            transform.position = newPosition;
+            if (rb != null)
+            {
+                rb.position = newPosition;
+                rb.linearVelocity = newVelocity;
+            }
+            lastPhysicsPos = newPosition;
+            Physics2D.SyncTransforms();
+
+            if (SmoothFollowCamera.Instance != null)
+            {
+                SmoothFollowCamera.Instance.NotifyPortalWarp();
+            }
+            else
+            {
+                Camera.main?.GetComponent<SmoothFollowCamera>()?.NotifyPortalWarp();
+            }
+        }
+
         public void RespawnAtCheckpoint()
         {
             StartCoroutine(RespawnRoutine());
@@ -444,9 +466,14 @@ namespace SnowballAdventure
         private IEnumerator RespawnRoutine()
         {
             transform.position = respawnPosition;
-            rb.linearVelocity = Vector2.zero;
-            rb.simulated = true;
+            if (rb != null)
+            {
+                rb.position = respawnPosition;
+                rb.linearVelocity = Vector2.zero;
+                rb.simulated = true;
+            }
             lastPhysicsPos = respawnPosition;
+            Physics2D.SyncTransforms();
             currentRollAngle = 0f;
             targetVisualSpeed = 0f;
             currentVisualSpeed = 0f;

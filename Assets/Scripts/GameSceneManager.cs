@@ -39,6 +39,19 @@ namespace SnowballAdventure
         public GameObject gameOverPanel;
         public Text gameOverCoinsText;
 
+        [Header("Character Unlock Notification")]
+        public GameObject characterUnlockContainer;
+        public Image characterUnlockImage;
+        public Text characterUnlockTitleText;
+        public Text characterUnlockDescText;
+        public RectTransform levelCompleteDialogRt;
+        public RectTransform levelCompleteTitleRt;
+        public RectTransform levelCompleteStarsContainerRt;
+        public RectTransform levelCompleteCoinsRt;
+        public RectTransform levelCompleteNextBtnRt;
+        public RectTransform levelCompleteRestartBtnRt;
+        public RectTransform levelCompleteMenuBtnRt;
+
         [Header("Runtime")]
         public int currentCoins = 0;
         public int currentLives = MAX_LIVES;
@@ -125,7 +138,8 @@ namespace SnowballAdventure
             {
                 if (currentLives > 0)
                 {
-                    // Revive by consuming a life (max 3 times)
+                    // Consumes a heart (3 -> 2, 2 -> 1, 1 -> 0)
+                    // When the last heart is gone (0 hearts), player still gets a chance just like before!
                     currentLives--;
                     UpdateHeartsHUD();
                     player.RespawnAtCheckpoint();
@@ -133,12 +147,12 @@ namespace SnowballAdventure
                 }
                 else if (!hasUsedAdRevive)
                 {
-                    // 0 lives left: Offer video ad revive popup
+                    // Player died while already at 0 hearts: Offer ad revive popup
                     ShowAdRevivePopup();
                 }
                 else
                 {
-                    // Ad revive was already used (last chance passed): Game Over!
+                    // Ad revive was already used: Game Over!
                     ShowGameOver();
                 }
             });
@@ -161,6 +175,8 @@ namespace SnowballAdventure
         {
             // Bypasses video playback as requested
             hasUsedAdRevive = true;
+            currentLives = MAX_LIVES; // Refills all 3 hearts!
+            UpdateHeartsHUD();
             SoundManager.EnsureInstance().PlayClick();
 
             if (adRevivePanel != null)
@@ -168,7 +184,7 @@ namespace SnowballAdventure
                 adRevivePanel.SetActive(false);
             }
 
-            // Revive player at checkpoint for their last chance!
+            // Revive player at checkpoint with all 3 hearts refilled!
             if (activePlayer != null)
             {
                 activePlayer.RespawnAtCheckpoint();
@@ -206,12 +222,23 @@ namespace SnowballAdventure
             isLevelFinished = true;
 
             int level = GameDataManager.Data.selectedLevel;
+
+            // Check if completing this level unlocks a new snowball character
+            CharacterDef unlockedChar = GameDataManager.GetCharacterUnlockedByLevel(level);
+
             GameDataManager.CompleteLevel(level, currentCoins);
 
-            StartCoroutine(ShowLevelCompleteSequence());
+            if (unlockedChar != null)
+            {
+                // When ball is unlocked it must be default selected
+                GameDataManager.Data.selectedCharacter = unlockedChar.id;
+                GameDataManager.Save();
+            }
+
+            StartCoroutine(ShowLevelCompleteSequence(unlockedChar));
         }
 
-        private IEnumerator ShowLevelCompleteSequence()
+        private IEnumerator ShowLevelCompleteSequence(CharacterDef unlockedChar)
         {
             yield return new WaitForSeconds(0.4f);
 
@@ -225,11 +252,93 @@ namespace SnowballAdventure
                 }
 
                 // Show stars (1 star for completing, 2 stars for >= 20 coins, 3 stars for all 30 coins!)
+                // Uncollected stars appear as shadow silhouette stars
+                int earnedStars = 1;
+                if (currentCoins >= 30) earnedStars = 3;
+                else if (currentCoins >= 20) earnedStars = 2;
+
                 if (starImages != null && starImages.Length >= 3)
                 {
-                    starImages[0].SetActive(true);
-                    starImages[1].SetActive(currentCoins >= 20);
-                    starImages[2].SetActive(currentCoins >= 30);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        if (starImages[i] != null)
+                        {
+                            starImages[i].SetActive(true);
+                            Image img = starImages[i].GetComponent<Image>();
+                            if (img != null)
+                            {
+                                img.color = (i < earnedStars) 
+                                    ? Color.white 
+                                    : new Color(0.12f, 0.22f, 0.38f, 0.35f);
+                            }
+                        }
+                    }
+                }
+
+                if (unlockedChar != null && characterUnlockContainer != null)
+                {
+                    characterUnlockContainer.SetActive(true);
+
+                    if (characterUnlockImage != null)
+                    {
+                        Sprite s = Resources.Load<Sprite>(unlockedChar.spriteResource);
+                        if (s != null) characterUnlockImage.sprite = s;
+                    }
+
+                    if (characterUnlockTitleText != null)
+                    {
+                        characterUnlockTitleText.text = $"{unlockedChar.name.ToUpper()} UNLOCKED!";
+                    }
+
+                    if (characterUnlockDescText != null)
+                    {
+                        characterUnlockDescText.text = $"{unlockedChar.title} • Default Selected!";
+                    }
+
+                    // Dynamically expand dialog and reposition elements for the unlock banner
+                    if (levelCompleteDialogRt != null) levelCompleteDialogRt.sizeDelta = new Vector2(590, 560);
+                    if (levelCompleteTitleRt != null) levelCompleteTitleRt.anchoredPosition = new Vector2(0, 215);
+                    if (levelCompleteStarsContainerRt != null) levelCompleteStarsContainerRt.anchoredPosition = new Vector2(0, 135);
+                    if (levelCompleteCoinsRt != null) levelCompleteCoinsRt.anchoredPosition = new Vector2(0, 75);
+                    if (levelCompleteNextBtnRt != null) levelCompleteNextBtnRt.anchoredPosition = new Vector2(0, -115);
+                    if (levelCompleteRestartBtnRt != null)
+                    {
+                        levelCompleteRestartBtnRt.anchoredPosition = new Vector2(-135, -185);
+                        levelCompleteRestartBtnRt.sizeDelta = new Vector2(230, 56);
+                    }
+                    if (levelCompleteMenuBtnRt != null)
+                    {
+                        levelCompleteMenuBtnRt.anchoredPosition = new Vector2(135, -185);
+                        levelCompleteMenuBtnRt.sizeDelta = new Vector2(230, 56);
+                    }
+
+                    // Update scene active player sprite if present
+                    if (activePlayer != null)
+                    {
+                        Sprite s = Resources.Load<Sprite>(unlockedChar.spriteResource);
+                        SpriteRenderer sr = activePlayer.GetComponent<SpriteRenderer>();
+                        if (sr != null && s != null) sr.sprite = s;
+                    }
+                }
+                else
+                {
+                    if (characterUnlockContainer != null) characterUnlockContainer.SetActive(false);
+
+                    if (levelCompleteDialogRt != null) levelCompleteDialogRt.sizeDelta = new Vector2(580, 470);
+                    if (levelCompleteTitleRt != null) levelCompleteTitleRt.anchoredPosition = new Vector2(0, 175);
+                    if (levelCompleteStarsContainerRt != null) levelCompleteStarsContainerRt.anchoredPosition = new Vector2(0, 95);
+                    if (levelCompleteCoinsRt != null) levelCompleteCoinsRt.anchoredPosition = new Vector2(0, 30);
+                    if (levelCompleteNextBtnRt != null) levelCompleteNextBtnRt.anchoredPosition = new Vector2(0, -45);
+                    if (levelCompleteRestartBtnRt != null)
+                    {
+                        levelCompleteRestartBtnRt.anchoredPosition = new Vector2(-135, -118);
+                        levelCompleteRestartBtnRt.sizeDelta = new Vector2(230, 56);
+                    }
+                    if (levelCompleteMenuBtnRt != null)
+                    {
+                        levelCompleteMenuBtnRt.anchoredPosition = new Vector2(135, -118);
+                        levelCompleteMenuBtnRt.sizeDelta = new Vector2(230, 56);
+                    }
                 }
             }
         }

@@ -180,24 +180,20 @@ namespace SnowballAdventure
             GameObject btnContainer = new GameObject("ButtonContainer", typeof(RectTransform));
             btnContainer.transform.SetParent(panel.transform, false);
             RectTransform bcRt = btnContainer.GetComponent<RectTransform>();
-            bcRt.anchoredPosition = new Vector2(0, -150);
-            bcRt.sizeDelta = new Vector2(300, 220);
+            bcRt.anchoredPosition = new Vector2(0, -155);
+            bcRt.sizeDelta = new Vector2(340, 260);
 
-            // PLAY Button
-            CreateMenuButton(btnContainer.transform, "PlayBtn", "PLAY ▶", font, Resources.Load<Sprite>("Sprites/ui_btn_green"), new Vector2(0, 65), new Vector2(240, 56), 24,
+            // PLAY Button (Enlarged)
+            CreateMenuButton(btnContainer.transform, "PlayBtn", "PLAY", font, Resources.Load<Sprite>("Sprites/ui_btn_green"), new Vector2(0, 78), new Vector2(300, 68), 28,
                 () => manager.OnPlayClicked());
 
-            // SETTINGS Button (replaces Levels Button)
-            CreateMenuButton(btnContainer.transform, "SettingsBtn", "SETTINGS ⚙", font, Resources.Load<Sprite>("Sprites/ui_btn_blue"), new Vector2(0, 0), new Vector2(240, 52), 20,
+            // SETTINGS Button (Enlarged)
+            CreateMenuButton(btnContainer.transform, "SettingsBtn", "SETTINGS", font, Resources.Load<Sprite>("Sprites/ui_btn_blue"), new Vector2(0, 0), new Vector2(300, 62), 24,
                 () => manager.OpenSettings());
 
-            // CONTROLS Button (replaces Characters Button)
-            CreateMenuButton(btnContainer.transform, "ControlsBtn", "CONTROLS 🎮", font, Resources.Load<Sprite>("Sprites/ui_btn_yellow"), new Vector2(0, -65), new Vector2(240, 52), 20,
+            // CONTROLS Button (Enlarged)
+            CreateMenuButton(btnContainer.transform, "ControlsBtn", "CONTROLS", font, Resources.Load<Sprite>("Sprites/ui_btn_yellow"), new Vector2(0, -78), new Vector2(300, 62), 24,
                 () => manager.OpenControls());
-
-            // QUIT Button (Bottom Right)
-            CreateMenuButton(panel.transform, "QuitBtn", "EXIT", font, Resources.Load<Sprite>("Sprites/ui_btn_red"), new Vector2(-100, 58), new Vector2(130, 48), 18,
-                () => manager.OnQuitClicked(), new Vector2(1, 0), new Vector2(1, 0));
 
             return panel;
         }
@@ -212,53 +208,118 @@ namespace SnowballAdventure
             rt.offsetMin = Vector2.zero;
             rt.offsetMax = Vector2.zero;
 
+            // Deep Midnight Aurora Frost Tint
             Image darkBg = panel.AddComponent<Image>();
-            darkBg.color = new Color(0, 0.08f, 0.2f, 0.88f);
+            darkBg.color = new Color(0.01f, 0.04f, 0.10f, 0.94f);
 
-            // Dialog Frame
-            GameObject dialog = new GameObject("Dialog", typeof(RectTransform));
-            dialog.transform.SetParent(panel.transform, false);
-            RectTransform dRt = dialog.GetComponent<RectTransform>();
-            dRt.sizeDelta = new Vector2(980, 620);
-            Image dImg = dialog.AddComponent<Image>();
-            dImg.sprite = Resources.Load<Sprite>("Sprites/ui_dialog_panel");
+            // 1. Top Header Bar
+            GameObject header = new GameObject("HeaderBar", typeof(RectTransform));
+            header.transform.SetParent(panel.transform, false);
+            RectTransform hRt = header.GetComponent<RectTransform>();
+            hRt.anchorMin = new Vector2(0, 1);
+            hRt.anchorMax = new Vector2(1, 1);
+            hRt.pivot = new Vector2(0.5f, 1);
+            hRt.anchoredPosition = new Vector2(0, -10);
+            hRt.sizeDelta = new Vector2(0, 70);
 
-            // Header Title (centered in the blue ribbon)
-            GameObject title = new GameObject("Title", typeof(RectTransform));
-            title.transform.SetParent(dialog.transform, false);
-            Text tTxt = title.AddComponent<Text>();
-            tTxt.text = "SELECT LEVEL (1 - 30)";
+            // Top-Left Back Button
+            CreateMenuButton(header.transform, "BackBtn", "BACK", font, Resources.Load<Sprite>("Sprites/ui_btn_blue"),
+                new Vector2(90, -30), new Vector2(140, 44), 18, () => manager.ShowTitlePanel(),
+                new Vector2(0, 0.5f), new Vector2(0.5f, 0.5f));
+
+            // Center Title & Subtitle
+            GameObject titleObj = new GameObject("Title", typeof(RectTransform));
+            titleObj.transform.SetParent(header.transform, false);
+            Text tTxt = titleObj.AddComponent<Text>();
+            tTxt.text = "SELECT LEVEL";
             tTxt.font = font;
             tTxt.fontSize = 28;
             tTxt.fontStyle = FontStyle.Bold;
             tTxt.alignment = TextAnchor.MiddleCenter;
             tTxt.color = Color.white;
-            RectTransform tRt = title.GetComponent<RectTransform>();
-            tRt.anchorMin = new Vector2(0, 1);
-            tRt.anchorMax = new Vector2(1, 1);
-            tRt.pivot = new Vector2(0.5f, 0.5f);
-            tRt.anchoredPosition = new Vector2(0, -56);
-            tRt.sizeDelta = new Vector2(0, 48);
+            Outline tOut = titleObj.AddComponent<Outline>();
+            tOut.effectColor = new Color(0.05f, 0.2f, 0.45f, 1f);
+            tOut.effectDistance = new Vector2(1.5f, -1.5f);
+            RectTransform tRt = titleObj.GetComponent<RectTransform>();
+            tRt.anchoredPosition = new Vector2(0, -16);
+            tRt.sizeDelta = new Vector2(400, 36);
 
-            // 30 Levels Grid Container (6 columns x 5 rows)
+            // 2. Center World Heading & Page Indicator (Shifted down, clean name without bracketed numbers)
+            GameObject worldHeader = new GameObject("WorldHeader", typeof(RectTransform));
+            worldHeader.transform.SetParent(panel.transform, false);
+            RectTransform whRt = worldHeader.GetComponent<RectTransform>();
+            whRt.anchorMin = new Vector2(0.5f, 1);
+            whRt.anchorMax = new Vector2(0.5f, 1);
+            whRt.pivot = new Vector2(0.5f, 1);
+            whRt.anchoredPosition = new Vector2(0, -92);
+            whRt.sizeDelta = new Vector2(400, 46);
+
+            Image whImg = worldHeader.AddComponent<Image>();
+            whImg.sprite = Resources.Load<Sprite>("Sprites/ui_world_tab_active");
+            whImg.color = new Color(0.12f, 0.42f, 0.78f, 0.95f);
+
+            GameObject whTxtObj = new GameObject("TitleText", typeof(RectTransform));
+            whTxtObj.transform.SetParent(worldHeader.transform, false);
+            Text whTxt = whTxtObj.AddComponent<Text>();
+            whTxt.text = "❄️ FROST PEAKS";
+            whTxt.font = font;
+            whTxt.fontSize = 22;
+            whTxt.fontStyle = FontStyle.Bold;
+            whTxt.alignment = TextAnchor.MiddleCenter;
+            whTxt.color = Color.white;
+            Outline whOut = whTxtObj.AddComponent<Outline>();
+            whOut.effectColor = new Color(0.04f, 0.15f, 0.35f, 1f);
+            whOut.effectDistance = new Vector2(1.5f, -1.5f);
+            RectTransform whTxtRt = whTxtObj.GetComponent<RectTransform>();
+            whTxtRt.anchorMin = Vector2.zero;
+            whTxtRt.anchorMax = Vector2.one;
+            whTxtRt.offsetMin = Vector2.zero;
+            whTxtRt.offsetMax = Vector2.zero;
+            manager.currentWorldTitleText = whTxt;
+
+            // Page Dots under World Title (Shifted down)
+            GameObject dotsObj = new GameObject("WorldDots", typeof(RectTransform));
+            dotsObj.transform.SetParent(panel.transform, false);
+            Text dotsTxt = dotsObj.AddComponent<Text>();
+            dotsTxt.supportRichText = true;
+            dotsTxt.text = "<color=#40e0ff>●</color>   <color=#507090>○</color>   <color=#507090>○</color>";
+            dotsTxt.font = font;
+            dotsTxt.fontSize = 15;
+            dotsTxt.alignment = TextAnchor.MiddleCenter;
+            RectTransform dotsRt = dotsObj.GetComponent<RectTransform>();
+            dotsRt.anchorMin = new Vector2(0.5f, 1);
+            dotsRt.anchorMax = new Vector2(0.5f, 1);
+            dotsRt.pivot = new Vector2(0.5f, 1);
+            dotsRt.anchoredPosition = new Vector2(0, -142);
+            dotsRt.sizeDelta = new Vector2(200, 20);
+            manager.worldPageIndicatorText = dotsTxt;
+
+            // Left & Right World Navigation Arrow Buttons (Shifted down to align with new grid position)
+            GameObject prevBtn = CreateMenuButton(panel.transform, "PrevWorldBtn", "◀", font,
+                Resources.Load<Sprite>("Sprites/ui_btn_blue"), new Vector2(-590, -56), new Vector2(58, 84), 30,
+                () => manager.PrevWorld());
+            manager.prevWorldButton = prevBtn.GetComponent<Button>();
+
+            GameObject nextBtn = CreateMenuButton(panel.transform, "NextWorldBtn", "▶", font,
+                Resources.Load<Sprite>("Sprites/ui_btn_blue"), new Vector2(590, -56), new Vector2(58, 84), 30,
+                () => manager.NextWorld());
+            manager.nextWorldButton = nextBtn.GetComponent<Button>();
+
+            // 3. 10 Levels Grid Container (5 columns x 2 rows, shifted down)
             GameObject grid = new GameObject("LevelGrid", typeof(RectTransform));
-            grid.transform.SetParent(dialog.transform, false);
+            grid.transform.SetParent(panel.transform, false);
             RectTransform gRt = grid.GetComponent<RectTransform>();
-            gRt.anchoredPosition = new Vector2(0, 10);
-            gRt.sizeDelta = new Vector2(880, 420);
+            gRt.anchoredPosition = new Vector2(0, -56);
+            gRt.sizeDelta = new Vector2(1080, 420);
 
             GridLayoutGroup glg = grid.AddComponent<GridLayoutGroup>();
-            glg.cellSize = new Vector2(125, 72);
-            glg.spacing = new Vector2(16, 8);
+            glg.cellSize = new Vector2(195, 185);
+            glg.spacing = new Vector2(20, 18);
             glg.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            glg.constraintCount = 6;
+            glg.constraintCount = 5;
             glg.childAlignment = TextAnchor.MiddleCenter;
 
             manager.levelGridContainer = grid.transform;
-
-            // BACK Button (comfortably lifted above bottom border)
-            CreateMenuButton(dialog.transform, "BackBtn", "← BACK", font, Resources.Load<Sprite>("Sprites/ui_btn_blue"), new Vector2(0, -240), new Vector2(180, 46), 18,
-                () => manager.ShowTitlePanel());
 
             panel.SetActive(false);
             return panel;
@@ -274,105 +335,239 @@ namespace SnowballAdventure
             rt.offsetMin = Vector2.zero;
             rt.offsetMax = Vector2.zero;
 
+            // Deep Midnight Aurora Frost Tint
             Image darkBg = panel.AddComponent<Image>();
-            darkBg.color = new Color(0, 0.08f, 0.2f, 0.88f);
+            darkBg.color = new Color(0.01f, 0.04f, 0.10f, 0.94f);
 
-            // Dialog Frame
-            GameObject dialog = new GameObject("Dialog", typeof(RectTransform));
-            dialog.transform.SetParent(panel.transform, false);
-            RectTransform dRt = dialog.GetComponent<RectTransform>();
-            dRt.sizeDelta = new Vector2(1040, 620);
-            Image dImg = dialog.AddComponent<Image>();
-            dImg.sprite = Resources.Load<Sprite>("Sprites/ui_dialog_panel");
+            // 1. Top Header Bar
+            GameObject header = new GameObject("HeaderBar", typeof(RectTransform));
+            header.transform.SetParent(panel.transform, false);
+            RectTransform hRt = header.GetComponent<RectTransform>();
+            hRt.anchorMin = new Vector2(0, 1);
+            hRt.anchorMax = new Vector2(1, 1);
+            hRt.pivot = new Vector2(0.5f, 1);
+            hRt.anchoredPosition = new Vector2(0, -10);
+            hRt.sizeDelta = new Vector2(0, 70);
 
-            // Header Title (centered in the blue ribbon)
-            GameObject title = new GameObject("Title", typeof(RectTransform));
-            title.transform.SetParent(dialog.transform, false);
-            Text tTxt = title.AddComponent<Text>();
-            tTxt.text = "SNOWBALL ROSTER (10 CHARACTERS)";
+            // Back Button
+            CreateMenuButton(header.transform, "BackBtn", "BACK", font, Resources.Load<Sprite>("Sprites/ui_btn_blue"),
+                new Vector2(90, -30), new Vector2(140, 44), 18, () => manager.OnCharacterBackClicked(),
+                new Vector2(0, 0.5f), new Vector2(0.5f, 0.5f));
+
+            // Center Title
+            GameObject titleObj = new GameObject("Title", typeof(RectTransform));
+            titleObj.transform.SetParent(header.transform, false);
+            Text tTxt = titleObj.AddComponent<Text>();
+            tTxt.text = "SNOWBALL HERO ROSTER";
             tTxt.font = font;
             tTxt.fontSize = 28;
             tTxt.fontStyle = FontStyle.Bold;
             tTxt.alignment = TextAnchor.MiddleCenter;
             tTxt.color = Color.white;
-            RectTransform tRt = title.GetComponent<RectTransform>();
-            tRt.anchorMin = new Vector2(0, 1);
-            tRt.anchorMax = new Vector2(1, 1);
-            tRt.pivot = new Vector2(0.5f, 0.5f);
-            tRt.anchoredPosition = new Vector2(0, -56);
-            tRt.sizeDelta = new Vector2(0, 48);
+            Outline tOut = titleObj.AddComponent<Outline>();
+            tOut.effectColor = new Color(0.05f, 0.2f, 0.45f, 1f);
+            tOut.effectDistance = new Vector2(1.5f, -1.5f);
+            RectTransform tRt = titleObj.GetComponent<RectTransform>();
+            tRt.anchoredPosition = new Vector2(0, -30);
+            tRt.sizeDelta = new Vector2(500, 36);
             manager.characterPanelTitleText = tTxt;
 
-            // Left Side: Active Character Preview Showcase
-            GameObject showcase = new GameObject("Showcase", typeof(RectTransform));
-            showcase.transform.SetParent(dialog.transform, false);
-            RectTransform scRt = showcase.GetComponent<RectTransform>();
-            scRt.anchoredPosition = new Vector2(-280, 5);
-            scRt.sizeDelta = new Vector2(300, 420);
+            // 2. HERO SPOTLIGHT STAGE (Left Area: Center x = -260, y = 50)
+            GameObject stageObj = new GameObject("HeroStage", typeof(RectTransform));
+            stageObj.transform.SetParent(panel.transform, false);
+            RectTransform stageRt = stageObj.GetComponent<RectTransform>();
+            stageRt.anchoredPosition = new Vector2(-260, 40);
+            stageRt.sizeDelta = new Vector2(340, 360);
 
-            GameObject prevImgObj = new GameObject("ShowcaseAvatar", typeof(RectTransform));
-            prevImgObj.transform.SetParent(showcase.transform, false);
-            Image scImg = prevImgObj.AddComponent<Image>();
-            scImg.sprite = GameDataManager.GetActiveCharacterSprite();
-            RectTransform scImgRt = prevImgObj.GetComponent<RectTransform>();
-            scImgRt.anchoredPosition = new Vector2(0, 80);
-            scImgRt.sizeDelta = new Vector2(160, 160);
-            manager.activePreviewImage = scImg;
+            // Ambient Glow Ring
+            GameObject ringObj = new GameObject("AuraRing", typeof(RectTransform));
+            ringObj.transform.SetParent(stageObj.transform, false);
+            Image ringImg = ringObj.AddComponent<Image>();
+            ringImg.sprite = Resources.Load<Sprite>("Sprites/ui_aura_ring");
+            RectTransform ringRt = ringObj.GetComponent<RectTransform>();
+            ringRt.anchoredPosition = new Vector2(0, 45);
+            ringRt.sizeDelta = new Vector2(270, 270);
+            manager.heroAuraRingRt = ringRt;
 
-            GameObject scNameObj = new GameObject("ShowcaseName", typeof(RectTransform));
-            scNameObj.transform.SetParent(showcase.transform, false);
-            Text scName = scNameObj.AddComponent<Text>();
-            scName.text = "Frosty Classic";
-            scName.font = font;
-            scName.fontSize = 22;
-            scName.fontStyle = FontStyle.Bold;
-            scName.alignment = TextAnchor.MiddleCenter;
-            scName.color = new Color(0.08f, 0.18f, 0.38f, 1f);
-            RectTransform scNameRt = scNameObj.GetComponent<RectTransform>();
-            scNameRt.anchoredPosition = new Vector2(0, -25);
-            scNameRt.sizeDelta = new Vector2(280, 35);
-            manager.activeNameText = scName;
+            // Crystalline Pedestal
+            GameObject pedObj = new GameObject("Pedestal", typeof(RectTransform));
+            pedObj.transform.SetParent(stageObj.transform, false);
+            Image pedImg = pedObj.AddComponent<Image>();
+            pedImg.sprite = Resources.Load<Sprite>("Sprites/ui_pedestal");
+            RectTransform pedRt = pedObj.GetComponent<RectTransform>();
+            pedRt.anchoredPosition = new Vector2(0, -65);
+            pedRt.sizeDelta = new Vector2(250, 94);
 
-            GameObject scDescObj = new GameObject("ShowcaseDesc", typeof(RectTransform));
-            scDescObj.transform.SetParent(showcase.transform, false);
-            Text scDesc = scDescObj.AddComponent<Text>();
-            scDesc.text = "The cheerful original adventurer! Well-balanced and loves rolling on fresh powder.";
-            scDesc.font = font;
-            scDesc.fontSize = 15;
-            scDesc.alignment = TextAnchor.MiddleCenter;
-            scDesc.color = new Color(0.18f, 0.28f, 0.44f, 1f);
-            RectTransform scDescRt = scDescObj.GetComponent<RectTransform>();
-            scDescRt.anchoredPosition = new Vector2(0, -90);
-            scDescRt.sizeDelta = new Vector2(270, 80);
-            manager.activeDescText = scDesc;
+            // Active Ball Hero Avatar
+            GameObject ballObj = new GameObject("HeroBall", typeof(RectTransform));
+            ballObj.transform.SetParent(stageObj.transform, false);
+            Image ballImg = ballObj.AddComponent<Image>();
+            ballImg.sprite = GameDataManager.GetActiveCharacterSprite();
+            RectTransform ballRt = ballObj.GetComponent<RectTransform>();
+            ballRt.anchoredPosition = new Vector2(0, 45);
+            ballRt.sizeDelta = new Vector2(165, 165);
+            manager.activePreviewImage = ballImg;
+            manager.heroStageBallRt = ballRt;
 
-            // Right Side: Scrollable Roster of 10 Characters
-            GameObject rosterObj = new GameObject("RosterGrid", typeof(RectTransform));
-            rosterObj.transform.SetParent(dialog.transform, false);
-            RectTransform rRt = rosterObj.GetComponent<RectTransform>();
-            rRt.anchoredPosition = new Vector2(160, 5);
-            rRt.sizeDelta = new Vector2(600, 430);
+            // 3. HERO DOSSIER & ATTRIBUTES (Right Area: Center x = 200, y = 40)
+            GameObject dossier = new GameObject("HeroDossier", typeof(RectTransform));
+            dossier.transform.SetParent(panel.transform, false);
+            RectTransform dRt = dossier.GetComponent<RectTransform>();
+            dRt.anchoredPosition = new Vector2(200, 40);
+            dRt.sizeDelta = new Vector2(560, 360);
 
-            GridLayoutGroup rGlg = rosterObj.AddComponent<GridLayoutGroup>();
-            rGlg.cellSize = new Vector2(285, 75);
-            rGlg.spacing = new Vector2(15, 10);
-            rGlg.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            rGlg.constraintCount = 2;
-            rGlg.childAlignment = TextAnchor.UpperLeft;
+            Image dImg = dossier.AddComponent<Image>();
+            dImg.sprite = Resources.Load<Sprite>("Sprites/ui_card_glass_unlocked");
+            dImg.color = new Color(0.08f, 0.22f, 0.44f, 0.95f);
 
-            manager.characterListContainer = rosterObj.transform;
+            // Hero Name - Centered Horizontally
+            GameObject nameObj = new GameObject("HeroName", typeof(RectTransform));
+            nameObj.transform.SetParent(dossier.transform, false);
+            Text hName = nameObj.AddComponent<Text>();
+            hName.text = "COSMO";
+            hName.font = font;
+            hName.fontSize = 32;
+            hName.fontStyle = FontStyle.Bold;
+            hName.alignment = TextAnchor.MiddleCenter;
+            hName.color = Color.white;
+            Outline nOut = nameObj.AddComponent<Outline>();
+            nOut.effectColor = new Color(0.05f, 0.15f, 0.35f, 1f);
+            nOut.effectDistance = new Vector2(1.5f, -1.5f);
+            RectTransform nRt = nameObj.GetComponent<RectTransform>();
+            nRt.anchoredPosition = new Vector2(0, 134);
+            nRt.sizeDelta = new Vector2(500, 38);
+            manager.activeNameText = hName;
 
-            // BACK Button (returns to Level Select if in play flow, or Title if browsing)
-            CreateMenuButton(dialog.transform, "BackBtn", "← BACK", font, Resources.Load<Sprite>("Sprites/ui_btn_blue"), new Vector2(-130, -240), new Vector2(180, 46), 18,
-                () => manager.OnCharacterBackClicked());
+            // Hero Title Badge - Centered Horizontally
+            GameObject tagObj = new GameObject("HeroTitleBadge", typeof(RectTransform));
+            tagObj.transform.SetParent(dossier.transform, false);
+            Text hTitle = tagObj.AddComponent<Text>();
+            hTitle.text = "★ COSMIC NEBULA";
+            hTitle.font = font;
+            hTitle.fontSize = 17;
+            hTitle.fontStyle = FontStyle.Bold;
+            hTitle.alignment = TextAnchor.MiddleCenter;
+            hTitle.color = new Color(1f, 0.85f, 0.3f, 1f);
+            RectTransform tagRt = tagObj.GetComponent<RectTransform>();
+            tagRt.anchoredPosition = new Vector2(0, 100);
+            tagRt.sizeDelta = new Vector2(500, 26);
+            manager.heroTitleText = hTitle;
+            manager.activeDescText = null;
 
-            // START GAME Button (launches GameScene with chosen level and character)
-            GameObject startBtn = CreateMenuButton(dialog.transform, "StartBtn", "PLAY LEVEL 1 ▶", font, Resources.Load<Sprite>("Sprites/ui_btn_green"), new Vector2(130, -240), new Vector2(240, 46), 18,
-                () => manager.OnStartGameClicked());
-            manager.startButtonText = startBtn.GetComponentInChildren<Text>();
+            // 4 STAT BARS HELPER
+            Sprite barBgSpr = Resources.Load<Sprite>("Sprites/ui_stat_bar_bg");
+            Sprite barFillSpr = Resources.Load<Sprite>("Sprites/ui_stat_bar_fill");
+
+            // Stat 1: SPEED
+            CreateStatRow(dossier.transform, font, barBgSpr, barFillSpr, "⚡ SPEED", 34, out manager.speedBarFill, out manager.speedValText);
+            // Stat 2: TRACTION & CONTROL
+            CreateStatRow(dossier.transform, font, barBgSpr, barFillSpr, "🛡️ CONTROL", 0, out manager.controlBarFill, out manager.controlValText);
+            // Stat 3: BOUNCE
+            CreateStatRow(dossier.transform, font, barBgSpr, barFillSpr, "🦘 BOUNCE", -34, out manager.bounceBarFill, out manager.bounceValText);
+
+            // Special Perk Row
+            GameObject perkObj = new GameObject("SpecialPerkRow", typeof(RectTransform));
+            perkObj.transform.SetParent(dossier.transform, false);
+            RectTransform pRt = perkObj.GetComponent<RectTransform>();
+            pRt.anchoredPosition = new Vector2(0, -74);
+            pRt.sizeDelta = new Vector2(480, 26);
+
+            Text pTxt = perkObj.AddComponent<Text>();
+            pTxt.text = "SPECIAL: 🪐 Graviton Singularity";
+            pTxt.font = font;
+            pTxt.fontSize = 14;
+            pTxt.fontStyle = FontStyle.Bold;
+            pTxt.alignment = TextAnchor.MiddleCenter;
+            pTxt.color = new Color(0.4f, 0.95f, 0.85f, 1f);
+            manager.heroSpecialPerkText = pTxt;
+
+            // Equip / Play Action Button
+            GameObject actionBtn = CreateMenuButton(dossier.transform, "ActionButton", "★ EQUIPPED", font,
+                Resources.Load<Sprite>("Sprites/ui_btn_green"), new Vector2(0, -132), new Vector2(280, 46), 18,
+                () => manager.OnHeroActionClicked());
+            manager.heroActionButton = actionBtn.GetComponent<Button>();
+            manager.heroActionBtnImg = actionBtn.GetComponent<Image>();
+            manager.heroActionBtnText = actionBtn.GetComponentInChildren<Text>();
+            manager.startButtonText = manager.heroActionBtnText;
+
+            // 4. BOTTOM HORIZONTAL CHARACTER DOCK (Carousel Strip across the bottom)
+            GameObject dock = new GameObject("CharacterDock", typeof(RectTransform));
+            dock.transform.SetParent(panel.transform, false);
+            RectTransform dockRt = dock.GetComponent<RectTransform>();
+            dockRt.anchorMin = new Vector2(0.5f, 0);
+            dockRt.anchorMax = new Vector2(0.5f, 0);
+            dockRt.pivot = new Vector2(0.5f, 0);
+            dockRt.anchoredPosition = new Vector2(0, 15);
+            dockRt.sizeDelta = new Vector2(1160, 132);
+
+            HorizontalLayoutGroup dhlg = dock.AddComponent<HorizontalLayoutGroup>();
+            dhlg.childAlignment = TextAnchor.MiddleCenter;
+            dhlg.spacing = 10;
+            dhlg.childControlWidth = false;
+            dhlg.childControlHeight = false;
+
+            manager.characterListContainer = dock.transform;
 
             panel.SetActive(false);
             return panel;
+        }
+
+        private void CreateStatRow(Transform parent, Font font, Sprite bgSpr, Sprite fillSpr, string label, float yPos, out RectTransform fillRt, out Text valTxt)
+        {
+            GameObject row = new GameObject("Stat_" + label.Replace(" ", ""), typeof(RectTransform));
+            row.transform.SetParent(parent, false);
+            RectTransform rRt = row.GetComponent<RectTransform>();
+            rRt.anchoredPosition = new Vector2(0, yPos);
+            rRt.sizeDelta = new Vector2(480, 24);
+
+            // Label Text (Left)
+            GameObject lblObj = new GameObject("Label", typeof(RectTransform));
+            lblObj.transform.SetParent(row.transform, false);
+            Text lTxt = lblObj.AddComponent<Text>();
+            lTxt.text = label;
+            lTxt.font = font;
+            lTxt.fontSize = 13;
+            lTxt.fontStyle = FontStyle.Bold;
+            lTxt.alignment = TextAnchor.MiddleLeft;
+            lTxt.color = new Color(0.7f, 0.88f, 1f, 1f);
+            RectTransform lRt = lblObj.GetComponent<RectTransform>();
+            lRt.anchoredPosition = new Vector2(-155, 0);
+            lRt.sizeDelta = new Vector2(130, 22);
+
+            // Track Background
+            GameObject track = new GameObject("Track", typeof(RectTransform));
+            track.transform.SetParent(row.transform, false);
+            Image tImg = track.AddComponent<Image>();
+            tImg.sprite = bgSpr;
+            RectTransform tRt = track.GetComponent<RectTransform>();
+            tRt.anchoredPosition = new Vector2(25, 0);
+            tRt.sizeDelta = new Vector2(220, 18);
+
+            // Fill Bar
+            GameObject fill = new GameObject("Fill", typeof(RectTransform));
+            fill.transform.SetParent(track.transform, false);
+            Image fImg = fill.AddComponent<Image>();
+            fImg.sprite = fillSpr;
+            fillRt = fill.GetComponent<RectTransform>();
+            fillRt.anchorMin = new Vector2(0, 0.5f);
+            fillRt.anchorMax = new Vector2(0, 0.5f);
+            fillRt.pivot = new Vector2(0, 0.5f);
+            fillRt.anchoredPosition = new Vector2(2, 0);
+            fillRt.sizeDelta = new Vector2(180, 14);
+
+            // Value Text (Right)
+            GameObject valObj = new GameObject("Val", typeof(RectTransform));
+            valObj.transform.SetParent(row.transform, false);
+            valTxt = valObj.AddComponent<Text>();
+            valTxt.text = "8.5";
+            valTxt.font = font;
+            valTxt.fontSize = 13;
+            valTxt.fontStyle = FontStyle.Bold;
+            valTxt.alignment = TextAnchor.MiddleRight;
+            valTxt.color = Color.white;
+            RectTransform vRt = valObj.GetComponent<RectTransform>();
+            vRt.anchoredPosition = new Vector2(175, 0);
+            vRt.sizeDelta = new Vector2(50, 22);
         }
 
         private GameObject BuildSettingsPanel(Transform canvas, Font font, MainMenuManager manager)
@@ -413,25 +608,25 @@ namespace SnowballAdventure
             tRt.anchoredPosition = new Vector2(0, -50);
             tRt.sizeDelta = new Vector2(0, 48);
 
-            // Subtitle on frosted body (dark blue text)
+            // Subtitle on frosted body (dark blue text) - Enlarged
             GameObject subObj = new GameObject("Subtitle", typeof(RectTransform));
             subObj.transform.SetParent(dialog.transform, false);
             Text subTxt = subObj.AddComponent<Text>();
             subTxt.text = "Audio & Sound Preferences";
             subTxt.font = font;
-            subTxt.fontSize = 18;
+            subTxt.fontSize = 24;
             subTxt.fontStyle = FontStyle.Bold;
             subTxt.alignment = TextAnchor.MiddleCenter;
             subTxt.color = new Color(0.08f, 0.18f, 0.38f, 1f);
             RectTransform sRt = subObj.GetComponent<RectTransform>();
-            sRt.anchoredPosition = new Vector2(0, 60);
-            sRt.sizeDelta = new Vector2(400, 30);
+            sRt.anchoredPosition = new Vector2(0, 65);
+            sRt.sizeDelta = new Vector2(460, 36);
 
             // Sound Toggle Button (controls SFX only)
             bool sfxOn = GameDataManager.Data.isSfxEnabled;
             GameObject soundBtn = CreateMenuButton(dialog.transform, "SoundToggleBtn", sfxOn ? "SOUND: ON" : "SOUND: OFF", font,
                 Resources.Load<Sprite>(sfxOn ? "Sprites/ui_btn_green" : "Sprites/ui_btn_red"),
-                new Vector2(0, 10), new Vector2(260, 52), 20,
+                new Vector2(0, 8), new Vector2(280, 56), 22,
                 () => manager.ToggleSoundFromSettings());
             manager.soundSettingBtnImg = soundBtn.GetComponent<Image>();
             manager.soundSettingText = soundBtn.GetComponentInChildren<Text>();
@@ -440,28 +635,14 @@ namespace SnowballAdventure
             bool musicOn = GameDataManager.Data.isMusicEnabled;
             GameObject musicBtn = CreateMenuButton(dialog.transform, "MusicToggleBtn", musicOn ? "MUSIC: ON" : "MUSIC: OFF", font,
                 Resources.Load<Sprite>(musicOn ? "Sprites/ui_btn_green" : "Sprites/ui_btn_red"),
-                new Vector2(0, -55), new Vector2(260, 52), 20,
+                new Vector2(0, -60), new Vector2(280, 56), 22,
                 () => manager.ToggleMusicFromSettings());
             manager.musicSettingBtnImg = musicBtn.GetComponent<Image>();
             manager.musicSettingText = musicBtn.GetComponentInChildren<Text>();
 
-            // Description note (dark blue text)
-            GameObject noteObj = new GameObject("Note", typeof(RectTransform));
-            noteObj.transform.SetParent(dialog.transform, false);
-            Text noteTxt = noteObj.AddComponent<Text>();
-            noteTxt.text = "Sound: SFX & impacts • Music: Background soundtrack";
-            noteTxt.font = font;
-            noteTxt.fontSize = 13;
-            noteTxt.fontStyle = FontStyle.Bold;
-            noteTxt.alignment = TextAnchor.MiddleCenter;
-            noteTxt.color = new Color(0.2f, 0.32f, 0.48f, 1f);
-            RectTransform noteRt = noteObj.GetComponent<RectTransform>();
-            noteRt.anchoredPosition = new Vector2(0, -112);
-            noteRt.sizeDelta = new Vector2(450, 28);
-
             // BACK Button
-            CreateMenuButton(dialog.transform, "BackBtn", "← BACK", font, Resources.Load<Sprite>("Sprites/ui_btn_blue"),
-                new Vector2(0, -150), new Vector2(180, 46), 18,
+            CreateMenuButton(dialog.transform, "BackBtn", "BACK", font, Resources.Load<Sprite>("Sprites/ui_btn_blue"),
+                new Vector2(0, -135), new Vector2(190, 50), 20,
                 () => manager.CloseSettings());
 
             panel.SetActive(false);
@@ -506,36 +687,32 @@ namespace SnowballAdventure
             tRt.anchoredPosition = new Vector2(0, -54);
             tRt.sizeDelta = new Vector2(0, 48);
 
-            // Content text on frosted body (dark blue text)
+            // Content text on frosted body (bold, larger, dark text showing only Keyboard and Touch controls)
             GameObject contentObj = new GameObject("Content", typeof(RectTransform));
             contentObj.transform.SetParent(dialog.transform, false);
             Text cTxt = contentObj.AddComponent<Text>();
             cTxt.font = font;
-            cTxt.fontSize = 15;
-            cTxt.lineSpacing = 1.25f;
+            cTxt.fontSize = 19;
+            cTxt.fontStyle = FontStyle.Bold;
+            cTxt.lineSpacing = 1.35f;
             cTxt.alignment = TextAnchor.UpperLeft;
-            cTxt.color = new Color(0.08f, 0.18f, 0.38f, 1f);
+            cTxt.color = new Color(0.04f, 0.08f, 0.18f, 1f);
             cTxt.text =
                 "KEYBOARD (PC):\n" +
-                "  • Move Left / Right : A / D  or  Left / Right Arrow Keys\n" +
-                "  • Jump / Leap : W  or  Up Arrow Key  or  Spacebar\n" +
+                "  • Move Left / Right : A / D  or  Arrow Keys\n" +
+                "  • Jump / Leap : W  or  Up Arrow  or  Spacebar\n" +
                 "  • Pause Game : Escape  or  P\n\n" +
                 "TOUCH (MOBILE):\n" +
                 "  • Move Left / Right : Left & Right On-screen Arrows\n" +
                 "  • Jump : Round Jump Button (Bottom Right)\n" +
-                "  • Pause : Pause Button (Top Right)\n\n" +
-                "GAME OBJECTIVES:\n" +
-                "  • Collect Coins to unlock cool Snowball Characters!\n" +
-                "  • Dodge Spikes, Pitfalls, and hazardous traps.\n" +
-                "  • Reach the Checkered Finish Flag to complete each level!\n" +
-                "  • 3 Lives per run + 1 Last Chance Ad Revive!";
+                "  • Pause : Pause Button (Top Right)";
 
             RectTransform cRt = contentObj.GetComponent<RectTransform>();
-            cRt.anchoredPosition = new Vector2(0, -6);
-            cRt.sizeDelta = new Vector2(560, 330);
+            cRt.anchoredPosition = new Vector2(0, -10);
+            cRt.sizeDelta = new Vector2(560, 290);
 
             // BACK Button
-            CreateMenuButton(dialog.transform, "BackBtn", "← BACK", font, Resources.Load<Sprite>("Sprites/ui_btn_blue"),
+            CreateMenuButton(dialog.transform, "BackBtn", "BACK", font, Resources.Load<Sprite>("Sprites/ui_btn_blue"),
                 new Vector2(0, -205), new Vector2(180, 46), 18,
                 () => manager.CloseControls());
 

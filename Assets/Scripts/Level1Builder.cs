@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 namespace SnowballAdventure
 {
@@ -45,6 +48,7 @@ namespace SnowballAdventure
         public Sprite laserEmitterSprite;
         public Sprite crushingPillarSprite;
         public Sprite conveyorSprite;
+        public Sprite conveyorReverseSprite;
         public Sprite gravityFlipPadSprite;
         public Sprite snowflakeSprite;
 
@@ -94,6 +98,7 @@ namespace SnowballAdventure
             laserEmitterSprite = Resources.Load<Sprite>("Sprites/frost_laser_emitter");
             crushingPillarSprite = Resources.Load<Sprite>("Sprites/crushing_ice_pillar");
             conveyorSprite = Resources.Load<Sprite>("Sprites/frost_conveyor");
+            conveyorReverseSprite = Resources.Load<Sprite>("Sprites/frost_conveyor_reverse");
             gravityFlipPadSprite = Resources.Load<Sprite>("Sprites/gravity_flip_pad");
             snowflakeSprite = Resources.Load<Sprite>("Sprites/particle_snowflake");
         }
@@ -510,10 +515,10 @@ namespace SnowballAdventure
             CreateCoin(20f, 1.2f);
 
             CreateGroundSegment(24f, 38f, 0f);
-            CreateRotatingFrostBar(31f, 1.8f, 70f, true);
+            CreateRotatingFrostBar(31f, 1.5f, 70f, true);
             CreateCheckpoint(38f, 0f);
             CreateCoin(26f, 1.2f);
-            CreateCoin(31f, 3.6f);
+            CreateCoin(31f, 3.2f);
             CreateCoin(36f, 1.2f);
 
             CreatePlatform(42f, 52f, 3.0f);
@@ -590,10 +595,10 @@ namespace SnowballAdventure
             CreateCoin(29f, 7.2f);
 
             CreateGroundSegment(38f, 52f, 0f);
-            CreateRotatingFrostBar(44f, 2.0f, 75f, true);
+            CreateRotatingFrostBar(44f, 1.5f, 75f, true);
             CreateCheckpoint(52f, 0f);
             CreateCoin(40f, 1.2f);
-            CreateCoin(44f, 4.2f);
+            CreateCoin(44f, 3.2f);
             CreateCoin(48f, 1.2f);
 
             CreateCrumblingBlock(55f, 0.5f);
@@ -689,12 +694,12 @@ namespace SnowballAdventure
             CreateCoin(72f, 7.2f);
 
             CreateIcePlatform(82f, 96f, 0f);
-            CreateRotatingFrostBar(88f, 2.0f, 90f, true);
-            CreateRotatingFrostBar(92f, 2.0f, 90f, false);
+            CreateRotatingFrostBar(88f, 1.5f, 90f, true);
+            CreateRotatingFrostBar(92f, 1.5f, 90f, false);
             CreateCheckpoint(96f, 0f);
             CreateCoin(84f, 1.2f);
-            CreateCoin(88f, 4.2f);
-            CreateCoin(92f, 4.2f);
+            CreateCoin(88f, 3.2f);
+            CreateCoin(92f, 3.2f);
             CreateCoin(95f, 1.2f);
 
             CreateBlinkingPlatform(100f, 1.5f, 0f);
@@ -748,10 +753,10 @@ namespace SnowballAdventure
             CreateCoin(21f, 9.7f);
             CreateCoin(25f, 9.7f);
 
-            CreateRotatingFrostBar(32f, 8.5f, 85f, true);
+            CreateRotatingFrostBar(32f, 8.0f, 85f, true);
             CreatePlatform(35f, 46f, 7.5f);
             CreateBounceSpring(37f, 7.5f, 12f);
-            CreateCoin(32f, 10.7f);
+            CreateCoin(32f, 9.7f);
             CreateCoin(38f, 10.2f);
             CreateCoin(42f, 8.7f);
 
@@ -764,11 +769,11 @@ namespace SnowballAdventure
 
             CreateSpeedBoost(68f, 0f, 17f);
             CreateIceFloe(78f, 0f);
-            CreateRotatingFrostBar(82f, 2.5f, 90f, false);
+            CreateRotatingFrostBar(82f, 1.5f, 90f, false);
             CreateIceFloe(86f, 0f);
             CreateCoin(72f, 2.5f);
             CreateCoin(78f, 1.2f);
-            CreateCoin(82f, 4.7f);
+            CreateCoin(82f, 3.2f);
             CreateCoin(86f, 1.2f);
 
             CreateCrumblingBlock(90f, 0.5f);
@@ -830,12 +835,12 @@ namespace SnowballAdventure
             CreateCoin(21f, 7.7f);
             CreateCoin(25f, 10.2f);
 
-            CreateRotatingFrostBar(36f, 9.0f, 95f, true);
+            CreateRotatingFrostBar(36f, 8.5f, 95f, true);
             CreateBlinkingPlatform(40f, 8.0f, 0f);
             CreateBlinkingPlatform(44f, 6.5f, 0.7f);
             CreateCheckpoint(48f, 5.0f);
             CreatePlatform(46f, 54f, 5.0f);
-            CreateCoin(36f, 11.2f);
+            CreateCoin(36f, 10.2f);
             CreateCoin(40f, 9.2f);
             CreateCoin(44f, 7.7f);
 
@@ -859,10 +864,10 @@ namespace SnowballAdventure
 
             CreateWindDraft(93f, 0f, 18f, 3.5f);
             CreatePlatform(96f, 112f, 10.5f);
-            CreateRotatingFrostBar(104f, 12.5f, 100f, false);
+            CreateRotatingFrostBar(104f, 12.0f, 100f, false);
             CreateCoin(93f, 5.5f);
             CreateCoin(98f, 11.7f);
-            CreateCoin(104f, 14.7f);
+            CreateCoin(104f, 13.7f);
             CreateCoin(109f, 11.7f);
 
             CreateBlinkingPlatform(116f, 9.0f, 0f);
@@ -910,7 +915,7 @@ namespace SnowballAdventure
             // Grand speed booster launch across abyss
             CreateSpeedBoost(12f, 0f, 18f);
             CreateIceFloe(22f, 0f);
-            CreateRotatingFrostBar(27f, 2.5f, 100f, true);
+            CreateRotatingFrostBar(27f, 0.8f, 100f, true);
             CreateIceFloe(32f, 0f);
             CreateCoin(16f, 2.5f);
             CreateCoin(19f, 3.2f);
@@ -940,11 +945,11 @@ namespace SnowballAdventure
             // High Wind Tunnel
             CreateWindDraft(85f, 7f, 18f, 4f);
             CreatePlatform(88f, 102f, 13.0f);
-            CreateRotatingFrostBar(95f, 15.0f, 110f, false);
+            CreateRotatingFrostBar(95f, 14.5f, 110f, false);
             CreateCheckpoint(102f, 13.0f);
             CreateCoin(86f, 11.0f);
             CreateCoin(90f, 14.2f);
-            CreateCoin(95f, 17.2f);
+            CreateCoin(95f, 16.2f);
             CreateCoin(100f, 14.2f);
 
             // Collapse Drop & Rapid Springs
@@ -971,7 +976,7 @@ namespace SnowballAdventure
             // Final Citadel Approach
             CreateSpeedBoost(142f, 4f, 18f);
             CreateIceFloe(152f, 2f);
-            CreateRotatingFrostBar(156f, 4.5f, 110f, true);
+            CreateRotatingFrostBar(156f, 2.5f, 110f, true);
             CreateIceFloe(160f, 1f);
             CreateCoin(146f, 6.0f);
             CreateCoin(152f, 3.2f);
@@ -1110,8 +1115,8 @@ namespace SnowballAdventure
             CreateCoin(43f, 1.2f);
             CreatePineTree(45f, 0f);
 
-            // Vertical Moving Lift Section
-            CreateMovingIcePlatform(50f, 0.5f, new Vector2(0f, 5.5f), 2.5f, 0.4f);
+            // Vertical Moving Lift Section (Level 12 up-down oscillation)
+            CreateLevel12VerticalPlatform(50f, 0.5f, 5.5f, 2.5f, 0.4f);
             CreateCoin(51f, 2.5f);
             CreateCoin(51f, 4.5f);
             CreateCoin(51f, 6.5f);
@@ -1195,7 +1200,7 @@ namespace SnowballAdventure
             CreateCoin(61f, 3.8f);
 
             // Trampoline over double spike pit
-            CreateGroundSegment(65f, 88f, 0f);
+            CreateGroundSegment(65f, 96f, 0f);
             CreateSpikes(68f, 0f);
             CreateFrostTrampoline(71f, 0f, 16.5f);
             CreateSpikes(75f, 0f);
@@ -1234,7 +1239,7 @@ namespace SnowballAdventure
             CreateCoin(8f, 1.2f);
 
             // Portal 1: Teleports across a bottomless chasm to high platform
-            CreatePortalPair(new Vector2(10f, 0f), new Vector2(16f, 5.5f), new Vector2(7f, 4f));
+            CreatePortalPair(new Vector2(10f, 0f), new Vector2(16f, 5.5f), Vector2.zero);
             CreatePlatform(15f, 25f, 5.5f);
             CreateCoin(13f, 4f);
             CreateCoin(17f, 7f);
@@ -1249,12 +1254,14 @@ namespace SnowballAdventure
             CreateCoin(32f, 2.5f);
             CreateCoin(34f, 1.2f);
 
-            // Portal 2: Upward launch through coin ring
-            CreatePortalPair(new Vector2(35f, 0f), new Vector2(40f, 2f), new Vector2(8f, 7f));
-            CreateCoin(41f, 4.5f);
-            CreateCoin(43f, 6.8f);
-            CreateCoin(45f, 7.5f);
-            CreateCoin(47f, 5.5f);
+            // Portal 2: Teleport to platform, stepping across to mid island
+            CreatePortalPair(new Vector2(35f, 0f), new Vector2(40f, 2f), Vector2.zero);
+            CreatePlatform(38.5f, 42f, 2f);
+            CreatePlatform(43.5f, 46.5f, 2f);
+            CreateCoin(41f, 3.4f);
+            CreateCoin(43.5f, 3.4f);
+            CreateCoin(45.5f, 3.4f);
+            CreateCoin(47f, 3.4f);
 
             // Mid Island & Checkpoint
             CreateGroundSegment(48f, 62f, 2f);
@@ -1266,16 +1273,16 @@ namespace SnowballAdventure
             CreateCoin(59f, 3.2f);
 
             // Portal 3: Secret coin alcove & return
-            CreatePortalPair(new Vector2(61.5f, 2f), new Vector2(66f, 7f), new Vector2(6f, 2f));
+            CreatePortalPair(new Vector2(61.5f, 2f), new Vector2(66f, 7f), Vector2.zero);
             CreatePlatform(65f, 75f, 7f);
             CreateCoin(66.5f, 8.2f);
             CreateCoin(68.5f, 8.5f);
             CreateCoin(70.5f, 8.5f);
-            CreateCoin(72.5f, 8.2f);
-            CreateCoin(74.5f, 7.5f);
+            CreateCoin(72.0f, 8.2f);
+            CreateCoin(73.0f, 7.8f);
 
-            // Portal 4: Launch into finish stretch
-            CreatePortalPair(new Vector2(74f, 7f), new Vector2(79f, 1f), new Vector2(8f, 4f));
+            // Portal 4: Teleport into finish stretch
+            CreatePortalPair(new Vector2(74f, 7f), new Vector2(79f, 0f), Vector2.zero);
             CreateGroundSegment(78f, 96f, 0f);
             CreateCoin(81f, 3.5f);
             CreateCoin(84f, 2f);
@@ -1301,18 +1308,18 @@ namespace SnowballAdventure
             CreateCoin(5f, 1.2f);
             CreateCoin(7.5f, 1.2f);
 
-            // Speed booster into long launch
-            CreateSpeedBoost(8.5f, 0f, 16f);
-            CreateCoin(10f, 2.5f);
-            CreateCoin(12.5f, 3.5f);
-            CreateCoin(15f, 3.5f);
-            CreateCoin(17.5f, 2.5f);
+            // Intermediate platform between ground and up-down elevator
+            CreatePlatform(13.5f, 16.5f, 0.5f);
+            CreateCoin(11.5f, 1.8f);
+            CreateCoin(14f, 1.7f);
+            CreateCoin(16f, 1.7f);
+            CreateCoin(18.2f, 2.0f);
 
-            // Landing onto moving elevator platform
-            CreateMovingIcePlatform(20f, 1f, new Vector2(0f, 6f), 2.6f, 0.4f);
-            CreateCoin(21f, 3f);
-            CreateCoin(21f, 5.5f);
-            CreateCoin(21f, 8f);
+            // Up-down moving elevator platform to reach high ridge
+            CreateMovingIcePlatform(20f, 1f, new Vector2(0f, 6.5f), 2.5f, 0.4f);
+            CreateCoin(20f, 3f);
+            CreateCoin(20f, 5.2f);
+            CreateCoin(20f, 7.5f);
 
             // High Neon Ridge
             CreatePlatform(23f, 36f, 7.5f);
@@ -1324,29 +1331,27 @@ namespace SnowballAdventure
 
             // Mega Trampoline launch across mega gap
             CreateFrostTrampoline(35f, 7.5f, 18f);
-            CreateCoin(37f, 10.5f);
-            CreateCoin(39.5f, 11.8f);
-            CreateCoin(42f, 11.8f);
-            CreateCoin(44.5f, 9.5f);
 
             // Mid Island & Checkpoint
             CreateGroundSegment(46f, 62f, 3f);
             CreateCheckpoint(48f, 3f);
+            CreateCoin(46.5f, 4.2f);
             CreateCoin(48f, 4.2f);
             CreateCoin(51f, 4.2f);
             CreateCoin(54f, 4.2f);
             CreatePineTree(56f, 3f);
             CreateCoin(57f, 4.2f);
+            CreateCoin(59.5f, 4.2f);
 
-            // Speed Boost through Frost Saw Gauntlet
-            CreateSpeedBoost(60f, 3f, 15f);
-            CreateMovingFrostHazard(66f, 3.8f, 4f, 3.5f);
+            // Intermediate platform before the side-to-side moving platform
+            CreatePlatform(65f, 69f, 2.8f);
+            CreateMovingFrostHazard(67f, 4.2f, 2.5f, 3f);
             CreateCoin(62f, 4.2f);
-            CreateCoin(65f, 4.5f);
-            CreateCoin(68f, 4.5f);
-            CreateCoin(70.5f, 4.2f);
+            CreateCoin(65f, 4.2f);
+            CreateCoin(68f, 4.2f);
+            CreateCoin(70.5f, 4.0f);
 
-            // Final Moving Platform ride
+            // Final Moving Platform ride (side to side)
             CreateMovingIcePlatform(72f, 2.5f, new Vector2(6f, 0f), 2.5f, 0.3f);
             CreateCoin(74f, 4f);
             CreateCoin(77f, 4f);
@@ -1354,7 +1359,9 @@ namespace SnowballAdventure
             // Final Run
             CreateGroundSegment(80f, 96f, 1f);
             CreateCoin(83f, 2.2f);
-            CreateCoin(87f, 2.2f);
+            CreateCoin(85.5f, 2.2f);
+            CreateCoin(88f, 2.2f);
+            CreateCoin(91f, 2.2f);
 
             CreateGoalArch(94f, 1f);
             CreateIcyChasm(-15f, 105f, -8f);
@@ -1389,10 +1396,10 @@ namespace SnowballAdventure
 
             // Wind Draft Geyser Lift to Tier 2
             CreateWindDraft(25.5f, 5.5f, 13f, 1.5f);
-            CreateCoin(25.5f, 7.5f);
-            CreateCoin(26.5f, 9.5f);
-            CreateCoin(27.5f, 11f);
-            CreateCoin(29f, 11.5f);
+            CreateCoin(25.6f, 8.6f);
+            CreateCoin(26.8f, 10.0f);
+            CreateCoin(28.0f, 11.2f);
+            CreateCoin(29.3f, 11.6f);
 
             // High Tier 2 Island & Checkpoint
             CreatePlatform(30f, 44f, 10.5f);
@@ -1403,12 +1410,11 @@ namespace SnowballAdventure
             CreateCoin(42f, 11.7f);
             CreatePineTree(42f, 10.5f);
 
-            // Mega Trampoline into descent
-            CreateFrostTrampoline(43.5f, 10.5f, 17f);
-            CreateCoin(44.5f, 13.5f);
-            CreateCoin(46.5f, 14.5f);
-            CreateCoin(48.5f, 13.5f);
-            CreateCoin(50f, 11.5f);
+            // Descent to Tier 3
+            CreateCoin(44.5f, 12.8f);
+            CreateCoin(46.5f, 13.4f);
+            CreateCoin(48.5f, 12.6f);
+            CreateCoin(50f, 11.0f);
 
             // Tier 3 Landing
             CreatePlatform(51f, 60f, 8.5f);
@@ -1493,23 +1499,22 @@ namespace SnowballAdventure
             CreateCoin(65.5f, 8.8f);
 
             // Falling Icicle trap on Crystal Bridge
-            CreatePlatform(67f, 78f, 7.5f);
+            CreatePlatform(67f, 80f, 7.5f);
             CreateFallingIcicle(70f, 12f);
             CreateFallingIcicle(74f, 12f);
             CreateCoin(68.5f, 8.8f);
             CreateCoin(71.5f, 8.8f);
             CreateCoin(74.5f, 8.8f);
 
-            // Mega Trampoline into Victory Valley
-            CreateFrostTrampoline(77f, 7.5f, 17f);
-            CreateCoin(78.5f, 10.5f);
-            CreateCoin(80.5f, 11.2f);
-            CreateCoin(82.5f, 9.5f);
+            // Descent into Victory Valley (jumper removed)
+            CreateCoin(78.5f, 8.8f);
+            CreateCoin(81.5f, 6.0f);
+            CreateCoin(84f, 2.5f);
 
-            CreateGroundSegment(85f, 98f, 1f);
-            CreateCoin(86f, 2.2f);
-            CreateCoin(89f, 2.2f);
-            CreateCoin(92f, 2.2f);
+            CreateGroundSegment(83.5f, 98f, 1f);
+            CreateCoin(87f, 2.2f);
+            CreateCoin(90f, 2.2f);
+            CreateCoin(93f, 2.2f);
 
             CreateGoalArch(96f, 1f);
             CreateIcyChasm(-15f, 108f, -8f);
@@ -1529,12 +1534,14 @@ namespace SnowballAdventure
             CreateCoin(5f, 1.2f);
             CreateCoin(7.5f, 1.2f);
 
-            // Portal Sequence 1: Fired upward into airborne coins
-            CreatePortalPair(new Vector2(9.5f, 0f), new Vector2(15f, 3f), new Vector2(9f, 8f));
-            CreateCoin(16f, 6f);
-            CreateCoin(18f, 8f);
-            CreateCoin(20f, 8f);
-            CreateCoin(22f, 6.5f);
+            // Portal Sequence 1: Teleport to mid platform, then leap across to high platform
+            CreatePortalPair(new Vector2(9.5f, 0f), new Vector2(15f, 3f), Vector2.zero);
+            CreatePlatform(13.5f, 17f, 3f);
+            CreatePlatform(18f, 21f, 4.5f);
+            CreateCoin(16.5f, 4.5f);
+            CreateCoin(18.5f, 6.0f);
+            CreateCoin(20.5f, 6.0f);
+            CreateCoin(22.5f, 7.2f);
             CreateCoin(25f, 7.2f);
 
             // Landing on High Platform
@@ -1551,7 +1558,7 @@ namespace SnowballAdventure
             CreateCoin(39f, 4f);
 
             // Portal 2: Warps across chasm to mid checkpoint
-            CreatePortalPair(new Vector2(41f, 1f), new Vector2(46f, 4f), new Vector2(7f, 3f));
+            CreatePortalPair(new Vector2(41f, 1f), new Vector2(47f, 3f), Vector2.zero);
             CreateGroundSegment(46f, 60f, 3f);
             CreateCheckpoint(48f, 3f);
             CreateCoin(48f, 4.2f);
@@ -1560,24 +1567,26 @@ namespace SnowballAdventure
             CreateCoin(57f, 4.2f);
             CreatePineTree(55f, 3f);
 
-            // Tricky Portal 3: Velocity leap over Spikes and Mace
-            CreatePortalPair(new Vector2(59f, 3f), new Vector2(64f, 7f), new Vector2(10f, 5f));
+            // Tricky Portal 3: Step out safely, time swinging mace, and jump across
+            CreatePortalPair(new Vector2(59f, 3f), new Vector2(64f, 7f), Vector2.zero);
+            CreatePlatform(62.5f, 65.5f, 7f);
+            CreatePlatform(68.5f, 71.5f, 6.8f);
             CreateSpikes(68f, 1f);
             CreateSwingingMace(70f, 12f, 4f, 50f, 2.5f, 0f);
-            CreateCoin(65f, 8.5f);
-            CreateCoin(67.5f, 10f);
-            CreateCoin(70f, 10.5f);
-            CreateCoin(72.5f, 9.5f);
-            CreateCoin(74.5f, 8f);
+            CreateCoin(65.5f, 8.2f);
+            CreateCoin(68.5f, 8.2f);
+            CreateCoin(70f, 8.2f);
+            CreateCoin(71.5f, 8.2f);
+            CreateCoin(74.5f, 7.8f);
 
             // High Landing Platform
             CreatePlatform(74f, 84f, 6.5f);
-            CreateCoin(77f, 7.7f);
-            CreateCoin(80f, 7.7f);
-            CreateCoin(83f, 7.7f);
+            CreateCoin(76.5f, 7.7f);
+            CreateCoin(78.5f, 7.7f);
+            CreateCoin(81f, 7.7f);
 
             // Portal 4: Drop down into final goal run
-            CreatePortalPair(new Vector2(83f, 6.5f), new Vector2(88f, 1f), new Vector2(6f, 2f));
+            CreatePortalPair(new Vector2(83f, 6.5f), new Vector2(89f, 0f), Vector2.zero);
             CreateGroundSegment(87f, 102f, 0f);
             CreateCoin(89f, 2.5f);
             CreateCoin(91.5f, 1.2f);
@@ -1687,7 +1696,7 @@ namespace SnowballAdventure
             // Phase 2: High Sky Crystal Platform with Swinging Mace
             CreatePlatform(14f, 28f, 8f);
             CreateSwingingMace(22f, 13.5f, 4f, 60f, 2.8f, 0f);
-            CreateCoin(15f, 8f);
+            CreateCoin(15f, 9.2f);
             CreateCoin(19f, 9.2f);
             CreateCoin(23f, 9.2f);
             CreateCoin(27f, 9.2f);
@@ -1696,12 +1705,14 @@ namespace SnowballAdventure
             CreateMovingIcePlatform(30f, 7.5f, new Vector2(0f, -4.5f), 2.5f, 0.35f);
             CreateCoin(31f, 6.5f);
             CreateCoin(31f, 4.5f);
-            CreateCoin(34f, 3.2f);
+            CreateCoin(31.8f, 3.7f);
 
-            CreatePortalPair(new Vector2(33f, 2.5f), new Vector2(38f, 9f), new Vector2(8f, 5f));
+            CreatePlatform(31.5f, 34.5f, 2.5f);
+            CreatePortalPair(new Vector2(33f, 2.5f), new Vector2(38f, 9f), Vector2.zero);
+            CreatePlatform(36.5f, 41.5f, 9f);
             CreateCoin(39f, 10.5f);
-            CreateCoin(41.5f, 11.5f);
-            CreateCoin(44f, 10.5f);
+            CreateCoin(41.5f, 10.8f);
+            CreateCoin(44f, 10.8f);
 
             // Phase 4: Mid Checkpoint Island
             CreatePlatform(44f, 58f, 9.5f);
@@ -1721,13 +1732,16 @@ namespace SnowballAdventure
 
             // Phase 6: Wind Geyser launch into Portal 2
             CreateWindDraft(70f, 4f, 14f, 2f);
-            CreateCoin(70f, 7f);
-            CreateCoin(71.5f, 9.5f);
-            CreateCoin(74f, 8.5f);
+            CreateCoin(70f, 6.5f);
+            CreateCoin(71.0f, 8.5f);
+            CreateCoin(72.0f, 9.2f);
 
-            CreatePortalPair(new Vector2(73f, 8f), new Vector2(78f, 3f), new Vector2(9f, 4f));
-            CreateCoin(79f, 5.5f);
-            CreateCoin(82f, 5.5f);
+            CreatePlatform(71.5f, 74.5f, 8f);
+            CreatePortalPair(new Vector2(73f, 8f), new Vector2(78f, 3f), Vector2.zero);
+            CreatePlatform(76.5f, 79.5f, 3f);
+            CreatePlatform(81f, 83.5f, 3.5f);
+            CreateCoin(79f, 4.5f);
+            CreateCoin(82f, 4.8f);
             CreateCoin(85f, 5.2f);
 
             // Phase 7: Moving platform between dual opposing Frost Bars
@@ -1737,12 +1751,12 @@ namespace SnowballAdventure
 
             // Phase 8: Final Trampoline Leap into the Victory Igloo
             CreateFrostTrampoline(97f, 4f, 17f);
-            CreateCoin(89f, 7.5f);
-            CreateCoin(92f, 8.5f);
+            CreateCoin(89f, 5.2f);
+            CreateCoin(93f, 5.2f);
 
             CreateGroundSegment(103f, 120f, 2f);
-            CreateCoin(96f, 3.2f);
-            CreateCoin(100f, 3.2f);
+            CreateCoin(106f, 3.2f);
+            CreateCoin(111f, 3.2f);
 
             CreateGoalArch(117f, 2f);
             CreateIcyChasm(-15f, 130f, -8f);
@@ -1860,7 +1874,8 @@ namespace SnowballAdventure
             CreateCoin(45f, 2.2f);
             CreatePineTree(47f, 1f);
             CreateCoin(49.5f, 2.2f);
-            CreateCoin(52f, 2.2f);
+            CreateCoin(51.5f, 2.2f);
+            CreateFrostTrampoline(53.2f, 1f, 16.5f);
 
             // Laser Corridor on High Platform
             CreatePlatform(56f, 72f, 4.5f);
@@ -1869,23 +1884,23 @@ namespace SnowballAdventure
             CreateCoin(58f, 5.7f);
             CreateCoin(61f, 5.7f);
             CreateCoin(63f, 5.7f);
-            CreateCoin(69f, 5.7f);
+            CreateCoin(68.5f, 5.7f);
+            CreateCoin(70.5f, 5.7f);
 
             // Trampoline leap over wide laser field
             CreateFrostTrampoline(74f, 4.5f, 17f);
             CreateFrostLaser(79f, 0f, 7f, 0f, 2.5f, 1.2f);
-            CreateCoin(75.5f, 7f);
-            CreateCoin(78f, 9.5f);
-            CreateCoin(81f, 8f);
 
             // Final Run
             CreateGroundSegment(83f, 100f, 1f);
-            CreateCoin(85f, 2.2f);
-            CreateCoin(88f, 2.2f);
-            CreateCoin(91f, 2.2f);
+            CreateCoin(84.5f, 2.2f);
+            CreateCoin(86.5f, 2.2f);
+            CreateCoin(88.5f, 2.2f);
+            CreateCoin(90.5f, 2.2f);
             CreateCoin(92.5f, 2.2f);
-            CreateCoin(94f, 2.2f);
-            CreateCoin(96.5f, 2.2f);
+            CreateCoin(94.5f, 2.2f);
+            CreateCoin(96f, 2.2f);
+            CreateCoin(97.5f, 2.2f);
 
             CreateGoalArch(98f, 1f);
             CreateIcyChasm(-15f, 110f, -8f);
@@ -1908,19 +1923,17 @@ namespace SnowballAdventure
 
             // First Crushing Pillar
             CreateGroundSegment(10f, 24f, 0f);
-            CreateCrushingPillar(16f, 6.5f, 4.5f);
+            CreateCrushingPillar(16f, 6.5f);
             CreateCoin(13f, 1.2f);
             CreateCoin(16f, 1.2f);
             CreateCoin(19f, 1.2f);
             CreateCoin(22f, 1.2f);
 
-            // Dual Crushing Pillars with Crumbling Steps
+            // Crumbling Steps across the Chasm
             CreateCrumblingBlock(27f, 0.5f);
-            CreateCrushingPillar(27f, 7f, 4.5f);
             CreateCoin(27f, 1.8f);
 
             CreateCrumblingBlock(31f, 1.5f);
-            CreateCrushingPillar(31f, 8f, 4.5f);
             CreateCoin(31f, 2.8f);
 
             // Mid Island & Checkpoint
@@ -1936,8 +1949,8 @@ namespace SnowballAdventure
             // Speed Boost beneath Rapid Crushing Pillars
             CreateGroundSegment(52f, 74f, 2f);
             CreateSpeedBoost(54f, 2f, 15f);
-            CreateCrushingPillar(60f, 8.5f, 4.5f);
-            CreateCrushingPillar(66f, 8.5f, 4.5f);
+            CreateCrushingPillar(60f, 8.5f);
+            CreateCrushingPillar(66f, 8.5f);
             CreateCoin(57f, 3.2f);
             CreateCoin(60f, 3.2f);
             CreateCoin(63f, 3.2f);
@@ -1946,9 +1959,8 @@ namespace SnowballAdventure
             CreateCoin(72f, 3.2f);
             CreateCoin(74f, 3.2f);
 
-            // Moving Ice Platform through final Crusher
+            // Moving Ice Platform to final run
             CreateMovingIcePlatform(76f, 2f, new Vector2(6f, 0f), 2.2f, 0.35f);
-            CreateCrushingPillar(79f, 8.5f, 4.5f);
             CreateCoin(77.5f, 3.5f);
             CreateCoin(80.5f, 3.5f);
 
@@ -2205,7 +2217,7 @@ namespace SnowballAdventure
 
             // Vertical Lift Platform past Laser
             CreateMovingIcePlatform(30f, 0.5f, new Vector2(0f, 5.5f), 2.5f, 0.4f);
-            CreateFrostLaser(34f, 3f, 4f, 0.5f, 1.8f, 1.2f);
+            CreateFrostLaser(34f, 5.2f, 6.5f, 0.5f, 1.8f, 1.2f);
             CreateCoin(31f, 2.5f);
             CreateCoin(31f, 4.5f);
             CreateCoin(31f, 6.5f);
@@ -2268,9 +2280,10 @@ namespace SnowballAdventure
             CreateCoin(5f, 1.2f);
             CreateCoin(7.5f, 1.2f);
 
-            // Portal 1: Launch into Gravity Orb
-            CreatePortalPair(new Vector2(9.5f, 0f), new Vector2(15f, 3f), new Vector2(9f, 6f));
-            CreateGravityOrb(20f, 6.5f, 14f, 4.5f);
+            // Portal 1: Warp to platform and leap into Gravity Orb
+            CreatePortalPair(new Vector2(9.5f, 0f), new Vector2(15f, 3f), Vector2.zero);
+            CreatePlatform(13.5f, 16.5f, 3f);
+            CreateGravityOrb(18.5f, 4.5f, 14f, 4.5f);
             CreateCoin(17f, 6f);
             CreateCoin(20f, 8.5f);
             CreateCoin(23f, 7f);
@@ -2289,7 +2302,7 @@ namespace SnowballAdventure
             CreateCoin(45f, 6.7f);
 
             // Portal 2: Warp to Mid Checkpoint Island
-            CreatePortalPair(new Vector2(47.5f, 5.5f), new Vector2(52f, 2f), new Vector2(7f, 2f));
+            CreatePortalPair(new Vector2(47.5f, 5.5f), new Vector2(52f, 1f), Vector2.zero);
             CreateGroundSegment(51f, 66f, 1f);
             CreateCheckpoint(53f, 1f);
             CreateCoin(55.5f, 2.2f);
@@ -2301,11 +2314,14 @@ namespace SnowballAdventure
             // Antigravity Well into Portal 3
             CreateGravityFlipPad(67f, 1f, 14f, 3.5f);
             CreateCoin(67f, 3.5f);
-            CreateCoin(69f, 6.5f);
+            CreateCoin(69f, 8.2f);
 
-            CreatePortalPair(new Vector2(70f, 7f), new Vector2(75f, 10f), new Vector2(9f, 4f));
-            CreateCoin(77f, 12f);
-            CreateCoin(80f, 12f);
+            CreatePlatform(68.5f, 71.5f, 7f);
+            CreatePortalPair(new Vector2(70f, 7f), new Vector2(75f, 10f), Vector2.zero);
+            CreatePlatform(73.5f, 76.5f, 10f);
+            CreatePlatform(77.5f, 79.5f, 9.5f);
+            CreateCoin(77.5f, 11f);
+            CreateCoin(80f, 11f);
 
             // High Celestial Ledge
             CreatePlatform(81f, 92f, 9f);
@@ -2315,8 +2331,8 @@ namespace SnowballAdventure
             CreateCoin(87.5f, 10.2f);
             CreateCoin(89f, 10.2f);
 
-            // Portal 4: Launch into finish sprint
-            CreatePortalPair(new Vector2(92f, 9f), new Vector2(97f, 1f), new Vector2(7f, 2f));
+            // Portal 4: Drop down into finish sprint
+            CreatePortalPair(new Vector2(92f, 9f), new Vector2(97.5f, 0f), Vector2.zero);
             CreateGroundSegment(96f, 112f, 0f);
             CreateCoin(99f, 1.2f);
             CreateCoin(102f, 1.2f);
@@ -2432,7 +2448,7 @@ namespace SnowballAdventure
             CreateCoin(38f, 6.7f);
 
             // Phase 3: Portal 1 into Checkpoint Island
-            CreatePortalPair(new Vector2(42f, 5.5f), new Vector2(47f, 3f), new Vector2(8f, 4f));
+            CreatePortalPair(new Vector2(42f, 5.5f), new Vector2(47.5f, 2f), Vector2.zero);
             CreateGroundSegment(46f, 62f, 2f);
             CreateCheckpoint(48f, 2f);
             CreateCoin(50.5f, 3.2f);
@@ -2441,9 +2457,8 @@ namespace SnowballAdventure
             CreateCoin(57.5f, 3.2f);
             CreateCoin(60f, 3.2f);
 
-            // Phase 4: Crushing Pillar over moving platform
+            // Phase 4: Moving platform across abyss
             CreateMovingIcePlatform(64f, 2f, new Vector2(7f, 0f), 2.2f, 0.35f);
-            CreateCrushingPillar(67.5f, 8.5f, 4.5f);
             CreateCoin(65f, 3.5f);
             CreateCoin(68f, 4f);
             CreateCoin(71f, 3.5f);
@@ -2457,7 +2472,8 @@ namespace SnowballAdventure
             CreateCoin(82f, 12f);
 
             // Phase 6: Portal 2 Warp across the Cosmic Vortex
-            CreatePortalPair(new Vector2(83f, 11f), new Vector2(88f, 5f), new Vector2(8f, 4f));
+            CreatePlatform(81.5f, 84.5f, 11f);
+            CreatePortalPair(new Vector2(83f, 11f), new Vector2(88.5f, 4f), Vector2.zero);
             CreatePlatform(87f, 102f, 4f);
             CreateRotatingFrostBar(94f, 5.5f, 70f, true);
             CreateCoin(90f, 5.2f);
@@ -2935,6 +2951,28 @@ namespace SnowballAdventure
             mip.moveDelta = moveDelta;
             mip.speed = speed;
             mip.waitTime = waitTime;
+            mip.SetTarget(new Vector3(x, y, 0f), new Vector3(x + moveDelta.x, y + moveDelta.y, 0f), speed, waitTime);
+        }
+
+        // Dedicated Level 12 vertical moving lift to strictly isolate vertical movement to Level 12
+        private void CreateLevel12VerticalPlatform(float x, float y, float heightDelta, float speed = 2.5f, float waitTime = 0.4f)
+        {
+            GameObject plat = new GameObject("MovingIcePlatform_L12");
+            plat.transform.SetParent(levelRoot.transform, false);
+            plat.transform.position = new Vector3(x, y, 0f);
+
+            SpriteRenderer rend = plat.AddComponent<SpriteRenderer>();
+            rend.sprite = movingPlatformSprite ?? woodPlatformSprite;
+            rend.sortingOrder = 3;
+
+            BoxCollider2D col = plat.AddComponent<BoxCollider2D>();
+            col.size = new Vector2(1.28f, 0.32f);
+
+            MovingIcePlatform mip = plat.AddComponent<MovingIcePlatform>();
+            mip.moveDelta = new Vector2(0f, heightDelta);
+            mip.speed = speed;
+            mip.waitTime = waitTime;
+            mip.SetTarget(new Vector3(x, y, 0f), new Vector3(x, y + heightDelta, 0f), speed, waitTime);
         }
 
         private void CreateSwingingMace(float anchorX, float anchorY, float length = 3.5f, float maxAngle = 60f, float speed = 2.4f, float phaseOffset = 0f)
@@ -2974,7 +3012,7 @@ namespace SnowballAdventure
             head.AddComponent<HazardSpike>();
         }
 
-        private void CreatePortalPair(Vector2 entrancePos, Vector2 exitPos, Vector2 exitVel)
+        private void CreatePortalPair(Vector2 entrancePos, Vector2 exitPos, Vector2 exitVel = default)
         {
             // Entrance (Blue)
             GameObject pIn = new GameObject("Portal_Entrance");
@@ -2990,7 +3028,7 @@ namespace SnowballAdventure
             cIn.size = new Vector2(0.8f, 1.28f);
 
             FrostPortal fpIn = pIn.AddComponent<FrostPortal>();
-            fpIn.exitVelocity = exitVel;
+            fpIn.exitVelocity = Vector2.zero;
 
             // Exit (Orange)
             GameObject pOut = new GameObject("Portal_Exit");
@@ -3035,46 +3073,51 @@ namespace SnowballAdventure
             laserRoot.transform.SetParent(levelRoot.transform, false);
             laserRoot.transform.position = new Vector3(x, y, 0f);
 
-            // Top Emitter
-            GameObject topEmitter = new GameObject("Emitter_Top");
-            topEmitter.transform.SetParent(laserRoot.transform, false);
-            topEmitter.transform.localPosition = new Vector3(0f, height * 0.5f, 0f);
-            SpriteRenderer topRend = topEmitter.AddComponent<SpriteRenderer>();
-            topRend.sprite = laserEmitterSprite;
-            topRend.sortingOrder = 6;
-
-            // Bottom Emitter
+            // Bottom Emitter (sits flush on top of the ground/platform)
             GameObject botEmitter = new GameObject("Emitter_Bottom");
             botEmitter.transform.SetParent(laserRoot.transform, false);
-            botEmitter.transform.localPosition = new Vector3(0f, -height * 0.5f, 0f);
+            botEmitter.transform.localPosition = new Vector3(0f, 0.24f, 0f);
             SpriteRenderer botRend = botEmitter.AddComponent<SpriteRenderer>();
             botRend.sprite = laserEmitterSprite;
             botRend.sortingOrder = 6;
 
-            // Beam
+            // Top Emitter (floats at the top of the laser beam)
+            GameObject topEmitter = new GameObject("Emitter_Top");
+            topEmitter.transform.SetParent(laserRoot.transform, false);
+            topEmitter.transform.localPosition = new Vector3(0f, height + 0.24f, 0f);
+            SpriteRenderer topRend = topEmitter.AddComponent<SpriteRenderer>();
+            topRend.sprite = laserEmitterSprite;
+            topRend.sortingOrder = 6;
+
+            // Beam (spans from bottom emitter to top emitter entirely above ground)
             GameObject beamObj = new GameObject("LaserBeam");
             beamObj.transform.SetParent(laserRoot.transform, false);
-            beamObj.transform.localPosition = Vector3.zero;
+            beamObj.transform.localPosition = new Vector3(0f, 0.24f + height * 0.5f, 0f);
 
             SpriteRenderer beamRend = beamObj.AddComponent<SpriteRenderer>();
             beamRend.sprite = laserBeamSprite;
             beamRend.sortingOrder = 5;
             beamRend.drawMode = SpriteDrawMode.Tiled;
             beamRend.size = new Vector2(0.32f, height);
+            beamRend.color = new Color(1f, 1f, 1f, 0f);
 
             BoxCollider2D beamCol = beamObj.AddComponent<BoxCollider2D>();
             beamCol.isTrigger = true;
             beamCol.size = new Vector2(0.32f, height);
+            beamCol.enabled = false;
 
-            FrostLaserBeam flb = laserRoot.AddComponent<FrostLaserBeam>();
+            // FrostLaserBeam component attached to beamObj so Unity 2D trigger callbacks fire directly
+            FrostLaserBeam flb = beamObj.AddComponent<FrostLaserBeam>();
             flb.beamRenderer = beamRend;
             flb.beamCollider = beamCol;
+            flb.topEmitterRenderer = topRend;
+            flb.botEmitterRenderer = botRend;
             flb.initialDelay = delay;
             flb.inactiveDuration = inactive;
             flb.activeDuration = active;
         }
 
-        private void CreateCrushingPillar(float x, float ceilingY, float dropDist = 4.5f)
+        private void CreateCrushingPillar(float x, float ceilingY, float dropDist = 5.9f)
         {
             GameObject pillar = new GameObject("CrushingIcePillar");
             pillar.transform.SetParent(levelRoot.transform, false);
@@ -3086,6 +3129,7 @@ namespace SnowballAdventure
 
             BoxCollider2D col = pillar.AddComponent<BoxCollider2D>();
             col.size = new Vector2(0.8f, 1.2f);
+            col.isTrigger = true;
 
             CrushingIcePillar cip = pillar.AddComponent<CrushingIcePillar>();
             cip.dropDistance = dropDist;
@@ -3102,7 +3146,7 @@ namespace SnowballAdventure
             conv.transform.position = new Vector3(midX, y - height * 0.5f, 0f);
 
             SpriteRenderer rend = conv.AddComponent<SpriteRenderer>();
-            rend.sprite = conveyorSprite;
+            rend.sprite = (speed < 0f && conveyorReverseSprite != null) ? conveyorReverseSprite : conveyorSprite;
             rend.drawMode = SpriteDrawMode.Tiled;
             rend.size = new Vector2(width, height);
             rend.sortingOrder = 3;
@@ -3158,7 +3202,7 @@ namespace SnowballAdventure
         {
             GameObject goal = new GameObject("GoalArch");
             goal.transform.SetParent(levelRoot.transform, false);
-            goal.transform.position = new Vector3(x, y + 0.6f, 0f);
+            goal.transform.position = new Vector3(x, y + 0.22f, 0f);
 
             SpriteRenderer rend = goal.AddComponent<SpriteRenderer>();
             rend.sprite = goalArchSprite;
@@ -3329,10 +3373,10 @@ namespace SnowballAdventure
             hcRt.anchorMax = new Vector2(0, 0.5f);
             hcRt.pivot = new Vector2(0, 0.5f);
             hcRt.anchoredPosition = new Vector2(25, 0);
-            hcRt.sizeDelta = new Vector2(130, 45);
+            hcRt.sizeDelta = new Vector2(125, 45);
 
-            Image[] hearts = new Image[3];
-            for (int i = 0; i < 3; i++)
+            Image[] hearts = new Image[GameSceneManager.MAX_LIVES];
+            for (int i = 0; i < GameSceneManager.MAX_LIVES; i++)
             {
                 GameObject hObj = new GameObject($"Heart_{i}");
                 hObj.transform.SetParent(heartsContainer.transform, false);
@@ -3409,8 +3453,8 @@ namespace SnowballAdventure
             gsm.heartEmptySprite = heartEmptySpr;
             gsm.heartImages = hearts;
 
-            // Pause Button (Top Right of TopBar)
-            GameObject pauseBtn = CreateUIButton(topBar.transform, "PauseBtn", "PAUSE ||", defaultFont, Resources.Load<Sprite>("Sprites/ui_btn_blue"), new Vector2(-25, 0), new Vector2(110, 42), 16, () => gsm.TogglePause(), new Vector2(1, 0.5f), new Vector2(1, 0.5f));
+            // Pause Button (Top Right of TopBar) - Enlarged
+            GameObject pauseBtn = CreateUIButton(topBar.transform, "PauseBtn", "PAUSE", defaultFont, Resources.Load<Sprite>("Sprites/ui_btn_blue"), new Vector2(-25, 0), new Vector2(145, 52), 20, () => gsm.TogglePause(), new Vector2(1, 0.5f), new Vector2(1, 0.5f));
 
             // Pause Panel
             GameObject pausePanel = BuildPausePanel(hudCanvas.transform, defaultFont, gsm);
@@ -3459,8 +3503,11 @@ namespace SnowballAdventure
             GameObject title = new GameObject("Title", typeof(RectTransform));
             title.transform.SetParent(dialog.transform, false);
             RectTransform tRt = title.GetComponent<RectTransform>();
-            tRt.anchoredPosition = new Vector2(0, 115);
-            tRt.sizeDelta = new Vector2(400, 40);
+            tRt.anchorMin = new Vector2(0, 1);
+            tRt.anchorMax = new Vector2(1, 1);
+            tRt.pivot = new Vector2(0.5f, 0.5f);
+            tRt.anchoredPosition = new Vector2(0, -45);
+            tRt.sizeDelta = new Vector2(0, 48);
             Text tTxt = title.AddComponent<Text>();
             tTxt.text = "PAUSED";
             tTxt.font = font;
@@ -3472,9 +3519,9 @@ namespace SnowballAdventure
             Sprite btnGreen = Resources.Load<Sprite>("Sprites/ui_btn_green");
             Sprite btnBlue = Resources.Load<Sprite>("Sprites/ui_btn_blue");
 
-            CreateUIButton(dialog.transform, "ResumeBtn", "RESUME ▶", font, btnGreen, new Vector2(0, 40), new Vector2(240, 50), 20, () => gsm.OnResumeClicked());
-            CreateUIButton(dialog.transform, "RestartBtn", "RESTART ↻", font, btnBlue, new Vector2(0, -25), new Vector2(240, 48), 18, () => gsm.OnRestartClicked());
-            CreateUIButton(dialog.transform, "MenuBtn", "MAIN MENU ⌂", font, btnBlue, new Vector2(0, -85), new Vector2(240, 48), 18, () => gsm.OnMainMenuClicked());
+            CreateUIButton(dialog.transform, "ResumeBtn", "RESUME", font, btnGreen, new Vector2(0, 40), new Vector2(240, 50), 20, () => gsm.OnResumeClicked());
+            CreateUIButton(dialog.transform, "RestartBtn", "RESTART", font, btnBlue, new Vector2(0, -25), new Vector2(240, 48), 18, () => gsm.OnRestartClicked());
+            CreateUIButton(dialog.transform, "MenuBtn", "MAIN MENU", font, btnBlue, new Vector2(0, -85), new Vector2(240, 48), 18, () => gsm.OnMainMenuClicked());
 
             panel.SetActive(false);
             return panel;
@@ -3515,19 +3562,26 @@ namespace SnowballAdventure
             tTxt.alignment = TextAnchor.MiddleCenter;
             tTxt.color = new Color(1f, 0.9f, 0.2f, 1f);
 
-            // Stars over frosted white panel
+            // Stars Container over frosted white panel
+            GameObject starsContainer = new GameObject("StarsContainer", typeof(RectTransform));
+            starsContainer.transform.SetParent(dialog.transform, false);
+            RectTransform scRt = starsContainer.GetComponent<RectTransform>();
+            scRt.anchoredPosition = new Vector2(0, 95);
+            scRt.sizeDelta = new Vector2(250, 64);
+
             Sprite starSpr = Resources.Load<Sprite>("Sprites/ui_star");
             starObjs = new GameObject[3];
             float[] starX = new float[] { -80f, 0f, 80f };
             for (int i = 0; i < 3; i++)
             {
                 GameObject star = new GameObject($"Star_{i}", typeof(RectTransform));
-                star.transform.SetParent(dialog.transform, false);
+                star.transform.SetParent(starsContainer.transform, false);
                 RectTransform sRt = star.GetComponent<RectTransform>();
-                sRt.anchoredPosition = new Vector2(starX[i], 95);
+                sRt.anchoredPosition = new Vector2(starX[i], 0);
                 sRt.sizeDelta = new Vector2(64, 64);
                 Image sImg = star.AddComponent<Image>();
                 sImg.sprite = starSpr;
+                sImg.color = new Color(0.12f, 0.22f, 0.38f, 0.35f);
                 starObjs[i] = star;
             }
 
@@ -3545,12 +3599,90 @@ namespace SnowballAdventure
             coinsText.alignment = TextAnchor.MiddleCenter;
             coinsText.color = new Color(0.08f, 0.18f, 0.38f, 1f);
 
+            // Character Unlock Card (shown dynamically when level unlocks a snowball)
+            GameObject unlockCard = new GameObject("CharacterUnlockCard", typeof(RectTransform));
+            unlockCard.transform.SetParent(dialog.transform, false);
+            RectTransform uRt = unlockCard.GetComponent<RectTransform>();
+            uRt.anchoredPosition = new Vector2(0, -10);
+            uRt.sizeDelta = new Vector2(500, 96);
+
+            Image uBg = unlockCard.AddComponent<Image>();
+            uBg.sprite = Resources.Load<Sprite>("Sprites/ui_unlock_card");
+            uBg.type = Image.Type.Simple;
+            uBg.color = Color.white;
+
+            // Ball Avatar Halo Ring
+            GameObject haloObj = new GameObject("AvatarHalo", typeof(RectTransform));
+            haloObj.transform.SetParent(unlockCard.transform, false);
+            RectTransform haloRt = haloObj.GetComponent<RectTransform>();
+            haloRt.anchoredPosition = new Vector2(-180, 0);
+            haloRt.sizeDelta = new Vector2(76, 76);
+            Image haloImg = haloObj.AddComponent<Image>();
+            haloImg.sprite = Resources.Load<Sprite>("Sprites/ui_aura_ring");
+            haloImg.color = new Color(1f, 0.92f, 0.45f, 0.85f);
+
+            // Ball Avatar Icon
+            GameObject avatarObj = new GameObject("UnlockAvatar", typeof(RectTransform));
+            avatarObj.transform.SetParent(unlockCard.transform, false);
+            RectTransform avRt = avatarObj.GetComponent<RectTransform>();
+            avRt.anchoredPosition = new Vector2(-180, 0);
+            avRt.sizeDelta = new Vector2(66, 66);
+            Image avImg = avatarObj.AddComponent<Image>();
+            avImg.preserveAspect = true;
+
+            // Unlock Text Group (Title + Description)
+            GameObject uTextObj = new GameObject("UnlockTitle", typeof(RectTransform));
+            uTextObj.transform.SetParent(unlockCard.transform, false);
+            RectTransform utRt = uTextObj.GetComponent<RectTransform>();
+            utRt.anchoredPosition = new Vector2(50, 16);
+            utRt.sizeDelta = new Vector2(350, 32);
+            Text uTitle = uTextObj.AddComponent<Text>();
+            uTitle.text = "NEW BALL UNLOCKED!";
+            uTitle.font = font;
+            uTitle.fontSize = 21;
+            uTitle.fontStyle = FontStyle.Bold;
+            uTitle.alignment = TextAnchor.MiddleLeft;
+            uTitle.color = new Color(1f, 0.88f, 0.24f, 1f);
+            Shadow utShadow = uTextObj.AddComponent<Shadow>();
+            utShadow.effectColor = new Color(0.02f, 0.06f, 0.16f, 0.95f);
+            utShadow.effectDistance = new Vector2(1.5f, -1.5f);
+
+            GameObject uDescObj = new GameObject("UnlockDesc", typeof(RectTransform));
+            uDescObj.transform.SetParent(unlockCard.transform, false);
+            RectTransform udRt = uDescObj.GetComponent<RectTransform>();
+            udRt.anchoredPosition = new Vector2(50, -16);
+            udRt.sizeDelta = new Vector2(350, 30);
+            Text uDesc = uDescObj.AddComponent<Text>();
+            uDesc.text = "Default Selected! Ready to roll!";
+            uDesc.font = font;
+            uDesc.fontSize = 16;
+            uDesc.fontStyle = FontStyle.Bold;
+            uDesc.alignment = TextAnchor.MiddleLeft;
+            uDesc.color = new Color(0.85f, 0.94f, 1f, 1f);
+            Shadow udShadow = uDescObj.AddComponent<Shadow>();
+            udShadow.effectColor = new Color(0.02f, 0.06f, 0.16f, 0.9f);
+            udShadow.effectDistance = new Vector2(1.2f, -1.2f);
+
+            unlockCard.SetActive(false);
+
             Sprite btnGreen = Resources.Load<Sprite>("Sprites/ui_btn_green");
             Sprite btnBlue = Resources.Load<Sprite>("Sprites/ui_btn_blue");
 
-            CreateUIButton(dialog.transform, "NextBtn", "NEXT LEVEL ▶", font, btnGreen, new Vector2(0, -45), new Vector2(260, 52), 22, () => gsm.OnNextLevelClicked());
-            CreateUIButton(dialog.transform, "RestartBtn", "RESTART ↻", font, btnBlue, new Vector2(-120, -115), new Vector2(200, 48), 18, () => gsm.OnRestartClicked());
-            CreateUIButton(dialog.transform, "MenuBtn", "MAIN MENU ⌂", font, btnBlue, new Vector2(120, -115), new Vector2(200, 48), 18, () => gsm.OnMainMenuClicked());
+            GameObject nextBtn = CreateUIButton(dialog.transform, "NextBtn", "NEXT LEVEL", font, btnGreen, new Vector2(0, -45), new Vector2(280, 56), 22, () => gsm.OnNextLevelClicked());
+            GameObject restartBtn = CreateUIButton(dialog.transform, "RestartBtn", "RESTART", font, btnBlue, new Vector2(-135, -118), new Vector2(230, 56), 20, () => gsm.OnRestartClicked());
+            GameObject menuBtn = CreateUIButton(dialog.transform, "MenuBtn", "MAIN MENU", font, btnBlue, new Vector2(135, -118), new Vector2(230, 56), 20, () => gsm.OnMainMenuClicked());
+
+            gsm.characterUnlockContainer = unlockCard;
+            gsm.characterUnlockImage = avImg;
+            gsm.characterUnlockTitleText = uTitle;
+            gsm.characterUnlockDescText = uDesc;
+            gsm.levelCompleteDialogRt = dRt;
+            gsm.levelCompleteTitleRt = tRt;
+            gsm.levelCompleteStarsContainerRt = scRt;
+            gsm.levelCompleteCoinsRt = cRt;
+            gsm.levelCompleteNextBtnRt = nextBtn.GetComponent<RectTransform>();
+            gsm.levelCompleteRestartBtnRt = restartBtn.GetComponent<RectTransform>();
+            gsm.levelCompleteMenuBtnRt = menuBtn.GetComponent<RectTransform>();
 
             panel.SetActive(false);
             return panel;
@@ -3581,12 +3713,15 @@ namespace SnowballAdventure
             GameObject title = new GameObject("Title", typeof(RectTransform));
             title.transform.SetParent(dialog.transform, false);
             RectTransform tRt = title.GetComponent<RectTransform>();
-            tRt.anchoredPosition = new Vector2(0, 150);
-            tRt.sizeDelta = new Vector2(460, 40);
+            tRt.anchorMin = new Vector2(0, 1);
+            tRt.anchorMax = new Vector2(1, 1);
+            tRt.pivot = new Vector2(0.5f, 0.5f);
+            tRt.anchoredPosition = new Vector2(0, -45);
+            tRt.sizeDelta = new Vector2(0, 48);
             Text tTxt = title.AddComponent<Text>();
             tTxt.text = "OUT OF LIVES!";
             tTxt.font = font;
-            tTxt.fontSize = 30;
+            tTxt.fontSize = 28;
             tTxt.fontStyle = FontStyle.Bold;
             tTxt.alignment = TextAnchor.MiddleCenter;
             tTxt.color = Color.white;
@@ -3598,27 +3733,41 @@ namespace SnowballAdventure
             descRt.anchoredPosition = new Vector2(0, 85);
             descRt.sizeDelta = new Vector2(460, 60);
             Text dTxt = desc.AddComponent<Text>();
-            dTxt.text = "Watch a video ad to revive\nand continue from checkpoint!";
+            dTxt.text = "Watch a video ad to refill\nall 3 hearts & continue!";
             dTxt.font = font;
             dTxt.fontSize = 20;
             dTxt.fontStyle = FontStyle.Bold;
             dTxt.alignment = TextAnchor.MiddleCenter;
             dTxt.color = new Color(0.08f, 0.18f, 0.38f, 1f);
 
-            // Heart Icon graphic with +1 badge
-            GameObject iconObj = new GameObject("ReviveHeart", typeof(RectTransform));
-            iconObj.transform.SetParent(dialog.transform, false);
-            RectTransform iRt = iconObj.GetComponent<RectTransform>();
-            iRt.anchoredPosition = new Vector2(0, 5);
-            iRt.sizeDelta = new Vector2(64, 64);
-            Image iImg = iconObj.AddComponent<Image>();
-            iImg.sprite = Resources.Load<Sprite>("Sprites/ui_heart_full");
+            // 3 Hearts Graphic Container (Refill All 3 Hearts)
+            GameObject heartsRow = new GameObject("ReviveHeartsRow", typeof(RectTransform));
+            heartsRow.transform.SetParent(dialog.transform, false);
+            RectTransform hrRt = heartsRow.GetComponent<RectTransform>();
+            hrRt.anchoredPosition = new Vector2(0, 10);
+            hrRt.sizeDelta = new Vector2(160, 48);
+
+            HorizontalLayoutGroup hrlg = heartsRow.AddComponent<HorizontalLayoutGroup>();
+            hrlg.childAlignment = TextAnchor.MiddleCenter;
+            hrlg.spacing = 10;
+            hrlg.childControlWidth = false;
+            hrlg.childControlHeight = false;
+
+            for (int h = 0; h < 3; h++)
+            {
+                GameObject hIcon = new GameObject($"Heart_{h}", typeof(RectTransform));
+                hIcon.transform.SetParent(heartsRow.transform, false);
+                Image hImg = hIcon.AddComponent<Image>();
+                hImg.sprite = Resources.Load<Sprite>("Sprites/ui_heart_full");
+                RectTransform hRt = hIcon.GetComponent<RectTransform>();
+                hRt.sizeDelta = new Vector2(44, 44);
+            }
 
             Sprite btnGreen = Resources.Load<Sprite>("Sprites/ui_btn_green");
             Sprite btnBlue = Resources.Load<Sprite>("Sprites/ui_btn_blue");
 
             // Button: Watch Ad To Revive (Bypasses video since not implemented yet)
-            CreateUIButton(dialog.transform, "WatchAdBtn", "WATCH AD TO REVIVE 🎬", font, btnGreen, new Vector2(0, -75), new Vector2(300, 52), 18, () => gsm.OnWatchAdReviveClicked());
+            CreateUIButton(dialog.transform, "WatchAdBtn", "WATCH AD TO REFILL HEARTS", font, btnGreen, new Vector2(0, -75), new Vector2(320, 52), 18, () => gsm.OnWatchAdReviveClicked());
 
             // Button: Give Up / No Thanks
             CreateUIButton(dialog.transform, "GiveUpBtn", "NO THANKS", font, btnBlue, new Vector2(0, -145), new Vector2(200, 42), 16, () => gsm.OnGiveUpAdReviveClicked());
@@ -3648,16 +3797,19 @@ namespace SnowballAdventure
             dImg.sprite = Resources.Load<Sprite>("Sprites/ui_dialog_panel");
             dImg.color = Color.white;
 
-            // Title in header ribbon
+            // Title in header ribbon - Centered in blue ribbon
             GameObject title = new GameObject("Title", typeof(RectTransform));
             title.transform.SetParent(dialog.transform, false);
             RectTransform tRt = title.GetComponent<RectTransform>();
-            tRt.anchoredPosition = new Vector2(0, 130);
-            tRt.sizeDelta = new Vector2(420, 45);
+            tRt.anchorMin = new Vector2(0, 1);
+            tRt.anchorMax = new Vector2(1, 1);
+            tRt.pivot = new Vector2(0.5f, 0.5f);
+            tRt.anchoredPosition = new Vector2(0, -45);
+            tRt.sizeDelta = new Vector2(0, 48);
             Text tTxt = title.AddComponent<Text>();
             tTxt.text = "GAME OVER";
             tTxt.font = font;
-            tTxt.fontSize = 32;
+            tTxt.fontSize = 28;
             tTxt.fontStyle = FontStyle.Bold;
             tTxt.alignment = TextAnchor.MiddleCenter;
             tTxt.color = Color.white;
@@ -3666,7 +3818,7 @@ namespace SnowballAdventure
             GameObject sub = new GameObject("Subtitle", typeof(RectTransform));
             sub.transform.SetParent(dialog.transform, false);
             RectTransform sRt = sub.GetComponent<RectTransform>();
-            sRt.anchoredPosition = new Vector2(0, 75);
+            sRt.anchoredPosition = new Vector2(0, 60);
             sRt.sizeDelta = new Vector2(400, 30);
             Text sTxt = sub.AddComponent<Text>();
             sTxt.text = "The snowball melted away!";
@@ -3680,7 +3832,7 @@ namespace SnowballAdventure
             GameObject cObj = new GameObject("CoinsCollected", typeof(RectTransform));
             cObj.transform.SetParent(dialog.transform, false);
             RectTransform cRt = cObj.GetComponent<RectTransform>();
-            cRt.anchoredPosition = new Vector2(0, 25);
+            cRt.anchoredPosition = new Vector2(0, 15);
             cRt.sizeDelta = new Vector2(400, 35);
             coinsText = cObj.AddComponent<Text>();
             coinsText.text = "Coins Collected: 0 / 30";
@@ -3694,10 +3846,10 @@ namespace SnowballAdventure
             Sprite btnBlue = Resources.Load<Sprite>("Sprites/ui_btn_blue");
 
             // Restart Level
-            CreateUIButton(dialog.transform, "RestartBtn", "RESTART LEVEL ↻", font, btnGreen, new Vector2(0, -45), new Vector2(240, 50), 19, () => gsm.OnRestartClicked());
+            CreateUIButton(dialog.transform, "RestartBtn", "RESTART LEVEL", font, btnGreen, new Vector2(0, -45), new Vector2(240, 50), 19, () => gsm.OnRestartClicked());
 
             // Main Menu
-            CreateUIButton(dialog.transform, "MenuBtn", "MAIN MENU ⌂", font, btnBlue, new Vector2(0, -110), new Vector2(240, 48), 18, () => gsm.OnMainMenuClicked());
+            CreateUIButton(dialog.transform, "MenuBtn", "MAIN MENU", font, btnBlue, new Vector2(0, -110), new Vector2(240, 48), 18, () => gsm.OnMainMenuClicked());
 
             panel.SetActive(false);
             return panel;
@@ -3747,9 +3899,10 @@ namespace SnowballAdventure
         {
             Sprite touchLeft = Resources.Load<Sprite>("Sprites/ui_touch_left");
             Sprite touchRight = Resources.Load<Sprite>("Sprites/ui_touch_right");
-            Sprite touchJump = Resources.Load<Sprite>("Sprites/ui_touch_jump");
+            Sprite touchSpace = Resources.Load<Sprite>("Sprites/ui_touch_spacebar") ?? Resources.Load<Sprite>("Sprites/ui_btn_blue");
 
-            CreateTouchButton(parent, "TouchBtn_Left", new Vector2(90, 90), new Vector2(100, 100), touchLeft, () =>
+            // Left Button: Square (84x84), height synced with spacebar, moved more toward center
+            CreateTouchButton(parent, "TouchBtn_Left", TouchButtonKind.Left, new Vector2(0, 0), new Vector2(200, 75), new Vector2(84, 84), touchLeft, () =>
             {
                 SnowballController.SetMoveLeft(true);
             }, () =>
@@ -3757,7 +3910,8 @@ namespace SnowballAdventure
                 SnowballController.SetMoveLeft(false);
             });
 
-            CreateTouchButton(parent, "TouchBtn_Right", new Vector2(210, 90), new Vector2(100, 100), touchRight, () =>
+            // Right Button: Square (84x84), height synced with spacebar, moved more toward center
+            CreateTouchButton(parent, "TouchBtn_Right", TouchButtonKind.Right, new Vector2(1, 0), new Vector2(-200, 75), new Vector2(84, 84), touchRight, () =>
             {
                 SnowballController.SetMoveRight(true);
             }, () =>
@@ -3765,56 +3919,135 @@ namespace SnowballAdventure
                 SnowballController.SetMoveRight(false);
             });
 
-            CreateTouchButton(parent, "TouchBtn_Jump", new Vector2(-110, 90), new Vector2(115, 115), touchJump, () =>
+            // Spacebar Button: Enlarged more (580x84), wide coverage, height synced with left/right buttons, no text
+            CreateTouchButton(parent, "TouchBtn_Space", TouchButtonKind.Jump, new Vector2(0.5f, 0), new Vector2(0, 75), new Vector2(580, 84), touchSpace, () =>
             {
                 SnowballController.RequestJump();
-            }, null, true);
+            }, null);
         }
 
-        private void CreateTouchButton(Transform parent, string name, Vector2 pos, Vector2 size, Sprite spr, System.Action onDown, System.Action onUp, bool isRightAnchor = false)
+        private GameObject CreateTouchButton(Transform parent, string name, TouchButtonKind kind, Vector2 anchor, Vector2 pos, Vector2 size, Sprite spr, System.Action onDown, System.Action onUp)
         {
             GameObject btnObj = new GameObject(name);
             btnObj.transform.SetParent(parent, false);
 
             RectTransform rt = btnObj.AddComponent<RectTransform>();
-            if (isRightAnchor)
-            {
-                rt.anchorMin = new Vector2(1, 0);
-                rt.anchorMax = new Vector2(1, 0);
-                rt.pivot = new Vector2(1, 0);
-            }
-            else
-            {
-                rt.anchorMin = new Vector2(0, 0);
-                rt.anchorMax = new Vector2(0, 0);
-                rt.pivot = new Vector2(0, 0);
-            }
+            rt.anchorMin = anchor;
+            rt.anchorMax = anchor;
+            rt.pivot = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = pos;
             rt.sizeDelta = size;
 
             Image img = btnObj.AddComponent<Image>();
             img.sprite = spr;
-            img.color = new Color(1f, 1f, 1f, 0.7f);
+            img.color = new Color(1f, 1f, 1f, 0.45f);
 
             TouchTrigger trigger = btnObj.AddComponent<TouchTrigger>();
+            trigger.kind = kind;
             trigger.onPointerDownAction = onDown;
             trigger.onPointerUpAction = onUp;
+
+            return btnObj;
         }
     }
 
+    public enum TouchButtonKind { Left, Right, Jump }
+
     public class TouchTrigger : MonoBehaviour, UnityEngine.EventSystems.IPointerDownHandler, UnityEngine.EventSystems.IPointerUpHandler
     {
+        public TouchButtonKind kind;
         public System.Action onPointerDownAction;
         public System.Action onPointerUpAction;
 
+        private Image buttonImage;
+        private Vector3 originalScale;
+        private bool isPointerDown;
+        private bool initialized;
+
+        private const float IDLE_ALPHA = 0.45f;
+        private const float PRESSED_ALPHA = 0.95f;
+
+        private void Start()
+        {
+            buttonImage = GetComponent<Image>();
+            originalScale = transform.localScale;
+            if (buttonImage != null)
+            {
+                Color c = buttonImage.color;
+                c.a = IDLE_ALPHA;
+                buttonImage.color = c;
+            }
+            initialized = true;
+        }
+
         public void OnPointerDown(UnityEngine.EventSystems.PointerEventData eventData)
         {
+            isPointerDown = true;
             onPointerDownAction?.Invoke();
         }
 
         public void OnPointerUp(UnityEngine.EventSystems.PointerEventData eventData)
         {
+            isPointerDown = false;
             onPointerUpAction?.Invoke();
+        }
+
+        private void Update()
+        {
+            if (!initialized || buttonImage == null) return;
+
+            bool isKeyPressed = false;
+
+#if ENABLE_INPUT_SYSTEM
+            if (Keyboard.current != null)
+            {
+                if (kind == TouchButtonKind.Left)
+                {
+                    isKeyPressed = Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed;
+                }
+                else if (kind == TouchButtonKind.Right)
+                {
+                    isKeyPressed = Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed;
+                }
+                else if (kind == TouchButtonKind.Jump)
+                {
+                    isKeyPressed = Keyboard.current.spaceKey.isPressed || Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed;
+                }
+            }
+#endif
+
+#if ENABLE_LEGACY_INPUT_MANAGER || !ENABLE_INPUT_SYSTEM
+            if (!isKeyPressed)
+            {
+                try
+                {
+                    if (kind == TouchButtonKind.Left)
+                    {
+                        isKeyPressed = Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow);
+                    }
+                    else if (kind == TouchButtonKind.Right)
+                    {
+                        isKeyPressed = Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow);
+                    }
+                    else if (kind == TouchButtonKind.Jump)
+                    {
+                        isKeyPressed = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow);
+                    }
+                }
+                catch { }
+            }
+#endif
+
+            bool isActive = isPointerDown || isKeyPressed;
+
+            float targetAlpha = isActive ? PRESSED_ALPHA : IDLE_ALPHA;
+            Vector3 targetScale = isActive ? (originalScale * 0.93f) : originalScale;
+
+            Color curColor = buttonImage.color;
+            curColor.a = Mathf.MoveTowards(curColor.a, targetAlpha, Time.unscaledDeltaTime * 12f);
+            buttonImage.color = curColor;
+
+            transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.unscaledDeltaTime * 25f);
         }
     }
 }
